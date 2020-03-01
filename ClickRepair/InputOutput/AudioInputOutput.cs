@@ -80,6 +80,12 @@ namespace GPUDeclickerUWP.Model.InputOutput
             return result;
         } */
 
+        public bool LoadAudioFromHttp(string url)
+        {
+            SetAudioData(new AudioDataMono(new float[100]));
+            return true;
+        }
+
             /*
         /// <summary>
         ///     Creates instances of FileInputNode, FrameOutputNode, AudioData

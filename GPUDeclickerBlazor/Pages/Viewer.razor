@@ -1,0 +1,43 @@
+﻿@page "/viewer"
+
+@using GPUDeclickerUWP.Model.Data;
+@using GPUDeclickerUWP.Model.InputOutput;
+
+@using System.ComponentModel.DataAnnotations;
+
+<h3>Viewer</h3>
+
+<EditForm Model="@_viewerModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText id="uri" @bind-Value="_viewerModel.Uri" />
+
+    <button type="submit">Submit</button>
+</EditForm>
+
+<h4>Length : @GetLength()</h4>
+
+@code {
+
+    private class ViewerModel
+    {
+        [Required]
+        [Url(ErrorMessage = "Not a valid URL")]
+        public string Uri { get; set; }
+    }
+
+    private ViewerModel _viewerModel = new ViewerModel();
+    private AudioInputOutput _audioIO = new AudioInputOutput();
+    private AudioData _audioData;
+
+    private void HandleValidSubmit()
+    {
+        _audioIO.LoadAudioFromHttp(_viewerModel.Uri);
+        _audioData = _audioIO.GetAudioData();
+    }
+
+    private string GetLength() => _audioData is null
+        ? "unknown"
+        : _audioData.LengthSamples().ToString() ;
+}
