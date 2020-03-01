@@ -18,6 +18,11 @@
 
 <h4>Length : @GetLength()</h4>
 
+@for (var index = 0; index < 1000; index++)
+{
+    <p>@index  ->  @_audioData?.GetInputSample(index)</p>
+}
+
 @code {
 
     private class ViewerModel

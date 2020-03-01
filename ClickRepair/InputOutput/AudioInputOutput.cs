@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 /*using Windows.Media;
@@ -7,6 +11,7 @@ using Windows.Media.MediaProperties;
 using Windows.Media.Render;
 using Windows.Storage; */
 using GPUDeclickerUWP.Model.Data;
+using NAudio.Wave;
 
 namespace GPUDeclickerUWP.Model.InputOutput
 {
@@ -82,7 +87,34 @@ namespace GPUDeclickerUWP.Model.InputOutput
 
         public bool LoadAudioFromHttp(string url)
         {
-            SetAudioData(new AudioDataMono(new float[100]));
+            using (Stream ms = new MemoryStream())
+            {
+                using (Stream stream = WebRequest.Create(url)
+                    .GetResponse().GetResponseStream())
+                {
+                    byte[] buffer = new byte[32768];
+                    int read;
+                    while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        ms.Write(buffer, 0, read);
+                    }
+                }
+
+                ms.Position = 0;
+                List<float> samples = new List<float>();
+                using (var blockAlignedStream = new WaveFileReader(ms))
+                {
+                    var sampleProvider = blockAlignedStream.ToSampleProvider();
+                    var buffer = new float[1024];
+                    var sampleCount = 0;
+                    while ((sampleCount = sampleProvider.Read(buffer, 0, buffer.Length)) > 0)
+                        samples.AddRange(buffer.Take(sampleCount));
+                }
+
+                SetAudioData(new AudioDataMono(samples.ToArray()));
+
+            }
+
             return true;
         }
 
