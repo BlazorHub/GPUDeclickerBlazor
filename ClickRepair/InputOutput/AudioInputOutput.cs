@@ -87,35 +87,37 @@ namespace GPUDeclickerUWP.Model.InputOutput
 
         public bool LoadAudioFromHttp(string url)
         {
-            using (Stream ms = new MemoryStream())
+            using var memoryStream = new MemoryStream();
+            // Get all content to memory stream
+            using (var stream = WebRequest.Create(url)
+                .GetResponse().GetResponseStream())
             {
-                using (Stream stream = WebRequest.Create(url)
-                    .GetResponse().GetResponseStream())
-                {
-                    byte[] buffer = new byte[32768];
-                    int read;
-                    while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
-                    {
-                        ms.Write(buffer, 0, read);
-                    }
-                }
-
-                ms.Position = 0;
-                List<float> samples = new List<float>();
-                using (var blockAlignedStream = new WaveFileReader(ms))
-                {
-                    var sampleProvider = blockAlignedStream.ToSampleProvider();
-                    var buffer = new float[1024];
-                    var sampleCount = 0;
-                    while ((sampleCount = sampleProvider.Read(buffer, 0, buffer.Length)) > 0)
-                        samples.AddRange(buffer.Take(sampleCount));
-                }
-
-                SetAudioData(new AudioDataMono(samples.ToArray()));
-
+                var buffer = new byte[32768];
+                int byteCount;
+                while ((byteCount = stream.Read(buffer, 0, buffer.Length)) > 0)
+                    memoryStream.Write(buffer, 0, byteCount);
             }
 
-            return true;
+            // Reset memory stream position
+            memoryStream.Position = 0;
+
+            // Convert content to samples
+            List<float> samples = new List<float>();
+            var sampleProvider = new WaveFileReader(memoryStream).ToSampleProvider();
+            {
+                var buffer = new float[16384];
+                int sampleCount;
+                while ((sampleCount = sampleProvider.Read(buffer, 0, buffer.Length)) > 0)
+                    samples.AddRange(buffer.Take(sampleCount));
+            }
+
+            if (samples.Count() > 0)
+            {
+                SetAudioData(new AudioDataMono(samples.ToArray()));
+                return true;
+            }
+            else
+                return false;
         }
 
             /*
