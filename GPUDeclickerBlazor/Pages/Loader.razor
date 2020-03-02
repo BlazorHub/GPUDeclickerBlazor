@@ -1,6 +1,7 @@
 ﻿@page "/load"
 
-@using GPUDeclickerUWP.Model.Data;
+@inject Data.AppState  AppState
+
 @using GPUDeclickerUWP.Model.InputOutput;
 
 @using System.ComponentModel.DataAnnotations;
@@ -29,15 +30,14 @@
 
     private ViewerModel _viewerModel = new ViewerModel();
     private AudioInputOutput _audioIO = new AudioInputOutput();
-    private AudioData _audioData;
 
     private void HandleValidSubmit()
     {
         _audioIO.LoadAudioFromHttp(_viewerModel.Uri);
-        _audioData = _audioIO.GetAudioData();
+        AppState.SetAudioData(_audioIO.GetAudioData());
     }
 
-    private string GetLength() => _audioData is null
+    private string GetLength() => AppState.AudioData is null
         ? "unknown"
-        : _audioData.LengthSamples().ToString();
+        : AppState.AudioData.LengthSamples().ToString();
 }

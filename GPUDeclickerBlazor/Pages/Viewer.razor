@@ -1,39 +1,10 @@
 ﻿@page "/view"
 
-@using GPUDeclickerUWP.Model.Data;
-@using GPUDeclickerUWP.Model.InputOutput;
-
-@using System.ComponentModel.DataAnnotations;
+@inject Data.AppState  AppState
 
 <h3>Viewer</h3>
 
-<h4>Length : @GetLength()</h4>
-
 @for (var index = 0; index < 1000; index++)
 {
-    <p>@index  ->  @_audioData?.GetInputSample(index)</p>
-}
-
-@code {
-
-    private class ViewerModel
-    {
-        [Required]
-        [Url(ErrorMessage = "Not a valid URL")]
-        public string Uri { get; set; }
-    }
-
-    private ViewerModel _viewerModel = new ViewerModel();
-    private AudioInputOutput _audioIO = new AudioInputOutput();
-    private AudioData _audioData;
-
-    private void HandleValidSubmit()
-    {
-        _audioIO.LoadAudioFromHttp(_viewerModel.Uri);
-        _audioData = _audioIO.GetAudioData();
-    }
-
-    private string GetLength() => _audioData is null
-        ? "unknown"
-        : _audioData.LengthSamples().ToString() ;
+    <p>@index  ->  @AppState.AudioData?.GetInputSample(index)</p>
 }
