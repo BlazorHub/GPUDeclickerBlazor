@@ -1,18 +1,22 @@
-﻿@page "/view"
+﻿@page "/load"
 
 @using GPUDeclickerUWP.Model.Data;
 @using GPUDeclickerUWP.Model.InputOutput;
 
 @using System.ComponentModel.DataAnnotations;
 
-<h3>Viewer</h3>
+<h3>Loader</h3>
+
+<EditForm Model="@_viewerModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText id="uri" @bind-Value="_viewerModel.Uri" />
+
+    <button type="submit">Submit</button>
+</EditForm>
 
 <h4>Length : @GetLength()</h4>
-
-@for (var index = 0; index < 1000; index++)
-{
-    <p>@index  ->  @_audioData?.GetInputSample(index)</p>
-}
 
 @code {
 
@@ -35,5 +39,5 @@
 
     private string GetLength() => _audioData is null
         ? "unknown"
-        : _audioData.LengthSamples().ToString() ;
+        : _audioData.LengthSamples().ToString();
 }
