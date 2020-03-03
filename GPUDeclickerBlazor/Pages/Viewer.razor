@@ -11,9 +11,25 @@
 
 <button class="btn btn-primary" @onclick="ScanAsync">Scan</button>
 
-@for (var index = 0; index < 1000; index++)
+@if (AppState.AudioData is null)
 {
-    <p>@index  ->  @AppState.AudioData?.GetInputSample(index)</p>
+    <h4>Please load audio file</h4>
+}
+else
+{
+    @for (var clicksIndex = 0;
+                clicksIndex < AppState.AudioData.CurrentChannelGetNumberOfClicks();
+                clicksIndex++)
+    {
+        // make new ClickWindow for a click
+        var click = AppState.AudioData.GetClick(clicksIndex);
+        <ClickWindow Click="click"/>
+    }
+
+    @for (var index = 0; index < 1000; index++)
+    {
+        <p>@index  ->  @AppState.AudioData?.GetInputSample(index)</p>
+    }
 }
 
 @code {
@@ -32,9 +48,9 @@
 
     private async void ScanAsync()
     {
-        // set parameters for scanning 
+        // set parameters for scanning
         AppState.AudioData.AudioProcessingSettings.ThresholdForDetection =
-            (float) 10;
+            (float)10;
         AppState.AudioData.AudioProcessingSettings.MaxLengthOfCorrection =
             250;
 
