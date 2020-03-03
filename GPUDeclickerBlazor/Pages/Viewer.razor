@@ -2,9 +2,50 @@
 
 @inject Data.AppState  AppState
 
+@using GPUDeclickerUWP.Model.Processing;
+
 <h3>Viewer</h3>
+
+<h4>Number of clicks : @GetNumberOfClicks()</h4>
+<h4>Status : @_taskStatus : @_taskProgress</h4>
+
+<button class="btn btn-primary" @onclick="ScanAsync">Scan</button>
 
 @for (var index = 0; index < 1000; index++)
 {
     <p>@index  ->  @AppState.AudioData?.GetInputSample(index)</p>
+}
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        _progress = new Progress<double>((d) => { _taskProgress = d; StateHasChanged(); });
+        _status = new Progress<string>((s) => { _taskStatus = s; StateHasChanged(); });
+    }
+
+    private Progress<double> _progress;
+    private Progress<string> _status;
+
+    private double _taskProgress;
+    private string _taskStatus;
+
+    private async void ScanAsync()
+    {
+        // set parameters for scanning 
+        AppState.AudioData.AudioProcessingSettings.ThresholdForDetection =
+            (float) 10;
+        AppState.AudioData.AudioProcessingSettings.MaxLengthOfCorrection =
+            250;
+
+        // scan and repair
+        await Task.Run(() => AudioProcessing.ProcessAudioAsync(
+            AppState.AudioData,
+            _progress,
+            _status));
+    }
+
+    private string GetNumberOfClicks() => AppState.AudioData is null
+        ? "unknown"
+        : AppState.AudioData?.CurrentChannelGetNumberOfClicks().ToString();
 }
