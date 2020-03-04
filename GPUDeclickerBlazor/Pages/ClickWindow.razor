@@ -112,28 +112,31 @@
         // clear polylines
         _input.Points.Clear();
         _output.Points.Clear();
+
         // calculate position in audio track to show click
         //in the center of this CW
-        var cwStartPos = (int)(
+        var clickWindowStartPosition = (int)(
             Click.Position +
             Click.Length / 2 -
             Width / 2);
+
         // set Input polylyne
-        for (var i = 0; i < Width; i++)
+        for (var x = 0; x < Width; x++)
         {
-            var s = Click.GetInputSample(cwStartPos + i);
-            float y = 100 * (-s + 1) / 2;
-            _input.Points.Add(new PointF(i, y));
+            var inputSample= Click.GetInputSample(clickWindowStartPosition + x);
+            var inputSampleY = Height * (-inputSample + 1) / 2;
+            _input.Points.Add(new PointF(x, inputSampleY));
         }
 
-        // set Output polyline two samples wider than click
-        for (var i = Click.Position - cwStartPos - 1;
-            i <= Click.Position - cwStartPos + Click.Length + 1;
-            i++)
+        // set Output polyline two samples wider than click width
+        var relativeClickPositionInClickWindow = Click.Position - clickWindowStartPosition;
+        for (var x = relativeClickPositionInClickWindow - 1;
+            x <= relativeClickPositionInClickWindow + Click.Length + 1;
+            x++)
         {
-            var s = Click.GetOutputSample(cwStartPos + i);
-            float y = 100 * (-s + 1) / 2;
-            _output.Points.Add(new PointF(i, y));
+            var outputSample = Click.GetOutputSample(clickWindowStartPosition + x);
+            var outputSampleY = Height * (-outputSample + 1) / 2;
+            _output.Points.Add(new PointF(x, outputSampleY));
         }
     }
 
