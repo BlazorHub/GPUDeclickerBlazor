@@ -35,6 +35,8 @@
         if (polyline.Points is null)
             return;
 
+        await _context.BeginBatchAsync();
+
         await _context.BeginPathAsync();
         await _context.SetStrokeStyleAsync(color);
         await _context.MoveToAsync(polyline.Points[0].X, polyline.Points[0].Y);
@@ -44,16 +46,22 @@
 
         await _context.StrokeAsync();
         await _context.ClosePathAsync();
+
+        await _context.EndBatchAsync();
     }
 
     private async Task DrawBourder(string color)
     {
+        await _context.BeginPathAsync();
+        
         await _context.BeginPathAsync();
         await _context.SetStrokeStyleAsync(color);
         await _context.RectAsync(0, 0, Width, Height);
 
         await _context.StrokeAsync();
         await _context.ClosePathAsync();
+
+        await _context.EndBatchAsync();
     }
 
     class Polyline
