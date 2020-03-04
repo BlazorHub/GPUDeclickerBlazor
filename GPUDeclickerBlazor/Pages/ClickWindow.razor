@@ -6,14 +6,15 @@
 
 <h3>@Click.Position x @Click.Length</h3>
 <h5>@Click.ErrorLevelDetected</h5>
-<BECanvas Width="_width" Height="_height" @ref="_canvasReference"></BECanvas>
+<BECanvas Width="Width" Height="Height" @ref="_canvasReference"></BECanvas>
 
 @code {
     [Parameter]
     public AudioClick Click { get; set; }
-
-    private int _width = 300;
-    private int _height = 200;
+    [Parameter]
+    public int Width { get; set; }
+    [Parameter]
+    public int Height { get; set; }
 
     private Canvas2DContext _context;
 
@@ -49,8 +50,8 @@
     {
         await _context.BeginPathAsync();
         await _context.SetStrokeStyleAsync(color);
-        await _context.RectAsync(0, 0, _width, _height);
-        
+        await _context.RectAsync(0, 0, Width, Height);
+
         await _context.StrokeAsync();
         await _context.ClosePathAsync();
     }
@@ -108,9 +109,9 @@
         var cwStartPos = (int)(
             Click.Position +
             Click.Length / 2 -
-            _width / 2);
+            Width / 2);
         // set Input polylyne
-        for (var i = 0; i < _width; i++)
+        for (var i = 0; i < Width; i++)
         {
             var s = Click.GetInputSample(cwStartPos + i);
             float y = 100 * (-s + 1) / 2;
