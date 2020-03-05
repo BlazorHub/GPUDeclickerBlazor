@@ -3,6 +3,7 @@
 @inject Data.AppState  AppState
 
 @using GPUDeclickerUWP.Model.Processing;
+@using GPUDeclickerUWP.Model.Data;
 
 <h3>Viewer</h3>
 
@@ -17,19 +18,7 @@
 }
 else
 {
-    @for (var clicksIndex = 0;
-                clicksIndex < AppState.AudioData.CurrentChannelGetNumberOfClicks();
-                clicksIndex++)
-    {
-        // make new ClickWindow for a click
-        var click = AppState.AudioData.GetClick(clicksIndex);
-        <ClickWindow Click="click" Width="300" Height="200"/>
-    }
-
-    @for (var index = 0; index < 1000; index++)
-    {
-        <p>@index  ->  @AppState.AudioData?.GetInputSample(index)</p>
-    }
+    <ClickCollectionWindow ClickArray="@GetAudioClicks()" Title="Mono" />
 }
 
 @code {
@@ -50,7 +39,7 @@ else
     {
         // set parameters for scanning
         AppState.AudioData.AudioProcessingSettings.ThresholdForDetection =
-            (float)10;
+            5f;
         AppState.AudioData.AudioProcessingSettings.MaxLengthOfCorrection =
             250;
 
@@ -64,4 +53,22 @@ else
     private string GetNumberOfClicks() => AppState.AudioData is null
         ? "unknown"
         : AppState.AudioData?.CurrentChannelGetNumberOfClicks().ToString();
+
+    private AudioClick[] GetAudioClicks()
+    {
+        if (AppState.AudioData is null)
+            return null;
+
+        var clickList = new List<AudioClick>();
+        AppState.AudioData.SortClicks();
+
+        for (var clicksIndex = 0;
+              clicksIndex < AppState.AudioData.CurrentChannelGetNumberOfClicks();
+              clicksIndex++)
+        {
+            clickList.Add(AppState.AudioData.GetClick(clicksIndex));
+        }
+
+        return clickList.ToArray();
+    }
 }
