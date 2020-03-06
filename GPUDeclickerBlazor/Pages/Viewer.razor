@@ -8,7 +8,6 @@
 <h3>Viewer</h3>
 
 <h4>Number of clicks : @GetNumberOfClicks()</h4>
-<h4>Status : @_taskStatus : @_taskProgress</h4>
 
 <button class="btn btn-primary" @onclick="ScanAsync">Scan</button>
 
@@ -18,7 +17,14 @@
 }
 else
 {
-    <ClickCollectionWindow ClickArray="@GetAudioClicks()" Title="Mono" />
+    if (_inProcess)
+    {
+        <h4>@_taskStatus - @_taskProgress</h4>
+    }
+    else
+    {
+        <ClickCollectionWindow ClickArray="@GetAudioClicks()" Title="Mono" />
+    }
 }
 
 @code {
@@ -34,6 +40,7 @@ else
 
     private double _taskProgress;
     private string _taskStatus;
+    private bool _inProcess = false;
 
     private async void ScanAsync()
     {
@@ -43,11 +50,16 @@ else
         AppState.AudioData.AudioProcessingSettings.MaxLengthOfCorrection =
             250;
 
+        _inProcess = true;
+
         // scan and repair
         await Task.Run(() => AudioProcessing.ProcessAudioAsync(
             AppState.AudioData,
             _progress,
             _status));
+
+        _inProcess = false;
+        StateHasChanged();
     }
 
     private string GetNumberOfClicks() => AppState.AudioData is null
