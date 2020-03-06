@@ -19,7 +19,7 @@ else
 {
     if (_inProcess)
     {
-        <h4>@_taskStatus - @_taskProgress</h4>
+        <h4>@_taskStatus - @String.Format("{0:F2}", _taskProgress)%</h4>
     }
     else
     {
