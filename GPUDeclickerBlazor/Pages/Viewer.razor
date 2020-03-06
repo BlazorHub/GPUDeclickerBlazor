@@ -9,23 +9,33 @@
 
 <h4>Number of clicks : @GetNumberOfClicks()</h4>
 
-<button class="btn btn-primary" @onclick="ScanAsync">Scan</button>
+<div>
+    <button class="btn btn-primary float-left" @onclick="ScanAsync">Scan</button>
 
-@if (AppState.AudioData is null)
-{
-    <h4>Please load audio file</h4>
-}
-else
-{
-    if (_inProcess)
+    <div class="float-right">
+        <button class="btn btn-primary" @onclick="@(_ => { if (_colNumber > 1) _colNumber--; })">&dArr;</button>
+        <h4 class="d-inline">  @_colNumber  </h4>
+        <button class="btn btn-primary" @onclick="@(_ => _colNumber++)">&uArr;</button>
+    </div>
+</div>
+
+<div style="clear:both">
+    @if (AppState.AudioData is null)
     {
-        <h4>@_taskStatus - @String.Format("{0:F2}", _taskProgress)%</h4>
+        <h4>Please load audio file</h4>
     }
     else
     {
-        <ClickCollectionWindow ClickArray="@GetAudioClicks()" Title="Mono" />
+        if (_inProcess)
+        {
+            <h4>@_taskStatus - @String.Format("{0:F2}", _taskProgress)%</h4>
+        }
+        else
+        {
+            <ClickCollectionWindow ClickArray="@GetAudioClicks()" Title="Mono" ColNumber="@_colNumber" />
+        }
     }
-}
+</div>
 
 @code {
 
@@ -41,6 +51,8 @@ else
     private double _taskProgress;
     private string _taskStatus;
     private bool _inProcess = false;
+
+    private int _colNumber = 4;
 
     private async void ScanAsync()
     {

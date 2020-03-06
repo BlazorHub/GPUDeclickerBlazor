@@ -4,12 +4,12 @@
 
 <table class="tab-content">
     <tbody>
-        @for (var row = 0; row * _colNumber < ClickArray.Length; row++)
+        @for (var row = 0; row * ColNumber < ClickArray.Length; row++)
         {
             <tr>
-                @for (var col = 0; (col < _colNumber) && (row * _colNumber + col < ClickArray.Length); col++)
+                @for (var col = 0; (col < ColNumber) && (row * ColNumber + col < ClickArray.Length); col++)
                 {
-                    <td><ClickWindow Click="ClickArray?[row * _colNumber + col]" Width="300" Height="200" /></td>
+                    <td style="padding: @_clickPadding px;" width="10%"><ClickWindow Click="ClickArray[row * ColNumber + col]" Width="@_clickWidth" Height="@_clickHeight" /></td>
                 }
             </tr>
         }
@@ -21,6 +21,17 @@
     public AudioClick[] ClickArray { get; set; }
     [Parameter]
     public string Title { get; set; }
+    [Parameter]
+    public int ColNumber { get; set; }
 
-    private int _colNumber = 4;
+    private int _clickWidth;
+    private int _clickHeight;
+    private int _clickPadding;
+
+    protected override void OnParametersSet()
+    {
+        _clickWidth = 300;
+        _clickHeight = 200;
+        _clickPadding = 10;
+    }
 }
