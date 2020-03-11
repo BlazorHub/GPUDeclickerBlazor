@@ -9,7 +9,7 @@
             <tr>
                 @for (var col = 0; (col < ColNumber) && (row * ColNumber + col < ClickArray.Length); col++)
                 {
-                    <td style="padding: @_clickPadding px;" width="10%"><ClickWindow Click="ClickArray[row * ColNumber + col]" Width="@_clickWidth" Height="@_clickHeight" /></td>
+                    <td style="padding: @_clickPadding px;"><ClickWindow Click="ClickArray[row * ColNumber + col]" Width="@_clickWidth" Height="@_clickHeight" /></td>
                 }
             </tr>
         }
