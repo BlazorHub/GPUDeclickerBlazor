@@ -10,6 +10,15 @@
 <h4>Number of clicks : @GetNumberOfClicks()</h4>
 
 <div>
+    <h4>Threshold : @_threshold</h4>
+    <input type="range" class="custom-range my-4 w-25" min="0.5" max="15" step="0.1" @bind-value="@_threshold" />
+</div>
+<div>
+    <h4>Max repair length : @_maxLength</h4>
+    <input type="range" class="custom-range my-4 w-25" min="1" max="350" step="1" @bind-value="@_maxLength" />
+</div>
+
+<div>
     <button class="btn btn-primary float-left" @onclick="ScanAsync">Scan</button>
 
     <div class="float-right">
@@ -54,13 +63,16 @@
 
     private int _colNumber = 4;
 
+    private float _threshold = 5f;
+    private int _maxLength = 250;
+
     private async void ScanAsync()
     {
         // set parameters for scanning
         AppState.AudioData.AudioProcessingSettings.ThresholdForDetection =
-            5f;
+            _threshold;
         AppState.AudioData.AudioProcessingSettings.MaxLengthOfCorrection =
-            250;
+            _maxLength;
 
         _inProcess = true;
 
