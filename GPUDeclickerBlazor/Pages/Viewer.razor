@@ -7,7 +7,7 @@
 
 <h3>Viewer</h3>
 
-<h4>Number of clicks : @GetNumberOfClicks()</h4>
+<h4>Number of clicks detected : @GetNumberOfClicks()</h4>
 
 <div>
     <h4>Threshold : @_threshold</h4>
@@ -19,7 +19,7 @@
 </div>
 
 <div>
-    <button class="btn btn-primary float-left" @onclick="ScanAsync">Scan</button>
+    <button class="btn btn-primary float-left" @onclick="ScanAsync">@ScanOrRescan()</button>
 
     <div class="float-right">
         <button class="btn btn-primary" @onclick="@(_ => { if (_colNumber > 1) _colNumber--; })">&dArr;</button>
@@ -47,6 +47,11 @@
 </div>
 
 @code {
+
+    private string ScanOrRescan()
+    {
+        return (AppState.AudioData?.CurrentChannelIsPreprocessed() ?? false) ? "Rescan" : "Scan";
+    }
 
     protected override void OnInitialized()
     {
