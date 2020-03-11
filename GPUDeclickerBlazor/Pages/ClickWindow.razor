@@ -4,7 +4,7 @@
 <h5>@Click.Position x @Click.Length</h5>
 <h6>@Click.ErrorLevelDetected</h6>
 
-<img src="data:image/gif;base64,@_imageBase64" style="max-height:100%; max-width:100%"/>
+<img src="data:image/gif;base64,@_imageBase64" style="max-height:100%; max-width:100%" @onclick="OnImageClick"/>
 
 @code {
     [Parameter]
@@ -18,6 +18,11 @@
     {
         base.OnParametersSet();
 
+        DrawImage();
+    }
+
+    private void DrawImage()
+    {
         SetBorderColour();
         SetPolylines();
 
@@ -108,20 +113,29 @@
         _output = output.ToArray();
     }
 
+    private void OnImageClick(
+        MouseEventArgs e)
+    {
+
+        Click.ChangeAproved();
+        DrawImage();
+    }
+
+    /*
     /// <summary>
     ///     Event handler processing mouse left button or touch screen
     ///     user actions
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    /*private void GridPointerPressed(
+    private void GridPointerPressed(
         object sender,
-        PointerRoutedEventArgs e)
+        MouseEventArgs e)
     {
-        if (!(sender is Grid grid))
-            return;
+        /*if (!(sender is Grid grid))
+            return; */
 
-        var areaPressed = PointerOnWhichArea(grid.ActualWidth, e);
+        /*var areaPressed = PointerOnWhichArea(sender.ActualWidth, e);
         switch (areaPressed)
         {
             case Area.LeftExpand:
@@ -156,9 +170,9 @@
                 _isPointerPressedInTheRightArea = true;
                 _pointerLastPosition = e.GetCurrentPoint(this).Position;
                 _pointPointerPressedInTheRightArea = _pointerLastPosition;
-                break;
-        }
-    } */
+                break; 
+        } 
+    }
 
     /// <summary>
     /// Defines on which of five areas of ClickWindow you can see the mouse pointer
