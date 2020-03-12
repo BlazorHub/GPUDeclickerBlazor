@@ -22,6 +22,7 @@
     <button class="btn btn-primary float-left" @onclick="ScanAsync">@ScanOrRescan()</button>
 
     <div class="float-right">
+        <h4>Columns:</h4>
         <button class="btn btn-primary" @onclick="@(_ => { if (_colNumber > 1) _colNumber--; })">&dArr;</button>
         <h4 class="d-inline">  @_colNumber  </h4>
         <button class="btn btn-primary" @onclick="@(_ => _colNumber++)">&uArr;</button>
