@@ -4,7 +4,14 @@
 <h5>@Click.Position x @Click.Length</h5>
 <h6>@Click.ErrorLevelDetected</h6>
 
-<img src="data:image/gif;base64,@_imageBase64" style="max-height:100%; max-width:100%" @onclick="OnImageClick"/>
+<div>
+    @if (_editMode)
+    {
+        <ClickEditor Click="@Click" OnClickEdited="@DrawImage" />
+    }
+
+    <img class="mh-100 mw-100" src="data:image/gif;base64,@_imageBase64" @onclick="OnImageClick" />
+</div>
 
 @code {
     [Parameter]
@@ -53,20 +60,14 @@
         graphics.DrawRectangle(new Pen(_borderColor, 3), 0, 0, Width, Height);
     }
 
-    private bool _isPointerPressedInTheLeftArea;
-    private bool _isPointerPressedInTheMidle;
-    private bool _isPointerPressedInTheRightArea;
-    private Point _pointerLastPosition;
-    private Point _pointPointerPressedInTheLeftArea;
-    private Point _pointPointerPressedInTheMidle;
-    private Point _pointPointerPressedInTheRightArea;
-
     private Color _borderColor;
     private PointF[] _input;
     private PointF[] _output;
 
     private Image _image;
     private string _imageBase64;
+
+    private bool _editMode = false;
 
     private void SetBorderColour()
     {
@@ -117,272 +118,6 @@
         MouseEventArgs e)
     {
 
-        Click.ChangeAproved();
-        DrawImage();
-    }
-
-    /*
-    /// <summary>
-    ///     Event handler processing mouse left button or touch screen
-    ///     user actions
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void GridPointerPressed(
-        object sender,
-        MouseEventArgs e)
-    {
-        /*if (!(sender is Grid grid))
-            return; */
-
-        /*var areaPressed = PointerOnWhichArea(sender.ActualWidth, e);
-        switch (areaPressed)
-        {
-            case Area.LeftExpand:
-                // remember pointer position
-                // action will be taken when poiner released
-                _isPointerPressedInTheLeftArea = true;
-                _pointerLastPosition = e.GetCurrentPoint(this).Position;
-                _pointPointerPressedInTheLeftArea = _pointerLastPosition;
-                break;
-            case Area.LeftShrink:
-                // shrink marked damaged sample sequence on left
-                Click.ShrinkLeft();
-                ThresholdLevelDetected.Text = Click.ErrorLevelDetected.ToString("0.0");
-                SetPolylines();
-                break;
-            case Area.Midle:
-                // remember pointer position
-                // action will be taken when poiner released
-                _isPointerPressedInTheMidle = true;
-                _pointerLastPosition = e.GetCurrentPoint(this).Position;
-                _pointPointerPressedInTheMidle = _pointerLastPosition;
-                break;
-            case Area.RightShrink:
-                // shrink marked damaged sample sequence on right
-                Click.ShrinkRight();
-                ThresholdLevelDetected.Text = Click.ErrorLevelDetected.ToString("0.0");
-                SetPolylines();
-                break;
-            case Area.RightExpand:
-                // remember pointer position
-                // action will be taken when poiner released
-                _isPointerPressedInTheRightArea = true;
-                _pointerLastPosition = e.GetCurrentPoint(this).Position;
-                _pointPointerPressedInTheRightArea = _pointerLastPosition;
-                break; 
-        } 
-    }
-
-    /// <summary>
-    /// Defines on which of five areas of ClickWindow you can see the mouse pointer
-    /// </summary>
-    /// <param name="width">ClickWindow width</param>
-    /// <param name="e">PointerRoutedEventArgs</param>
-    /// <returns></returns>
-    /*private Area PointerOnWhichArea(double width, PointerRoutedEventArgs e)
-    {
-        var point = e.GetCurrentPoint(this).Position;
-
-        if (point.X < width / 6)
-            return Area.LeftExpand;
-        if (point.X >= width / 6 && point.X < width / 3)
-            return Area.LeftShrink;
-        if (point.X >= 2 * width / 3 && point.X < 5 * width / 6)
-            return Area.RightShrink;
-        if (point.X >= 5 * width / 6)
-            return Area.RightExpand;
-
-        return Area.Midle;
-    } 
-
-    /// <summary>
-    /// Changes action notification depending on position of the pointer
-    /// over ClickWindow
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void GridPointerMoved(object sender, PointerRoutedEventArgs e)
-    {
-        var point = e.GetCurrentPoint(this).Position;
-
-        if (_isPointerPressedInTheLeftArea ||
-            _isPointerPressedInTheMidle ||
-            _isPointerPressedInTheRightArea)
-            GestureProcessing(point);
-
-        if (!(sender is Grid grid))
-            return;
-        var areaNavigated = PointerOnWhichArea(grid.ActualWidth, e);
-        if (areaNavigated == Area.LeftExpand)
-        {
-            // show left arrow in LeftExpand area
-            ActionNotification.Text = "\u21A4";
-            ActionNotification.HorizontalAlignment = HorizontalAlignment.Left;
-        }
-
-        if (areaNavigated == Area.LeftShrink)
-        {
-            // show right arrow in LeftShrink area
-            ActionNotification.Text = "\u21A6";
-            ActionNotification.HorizontalAlignment = HorizontalAlignment.Left;
-        }
-
-        if (areaNavigated == Area.Midle)
-        {
-            // show on/off in Midle area
-            ActionNotification.Text = "On/Off";
-            ActionNotification.HorizontalAlignment = HorizontalAlignment.Center;
-        }
-
-        if (areaNavigated == Area.RightShrink)
-        {
-            // show left arrow in RightShrink area
-            ActionNotification.Text = "\u21A4";
-            ActionNotification.HorizontalAlignment = HorizontalAlignment.Right;
-        }
-
-        if (areaNavigated == Area.RightExpand)
-        {
-            // show right arrow in RightExpand area
-            ActionNotification.Text = "\u21A6";
-            ActionNotification.HorizontalAlignment = HorizontalAlignment.Right;
-        }
-    } */
-
-    /// <summary>
-    /// Process gestures to expand or reduce click
-    /// </summary>
-    /// <param name="point"></param>
-    private void GestureProcessing(Point point)
-    {
-        const int minMovement = 3;
-        var changed = false;
-
-        if (_isPointerPressedInTheMidle)
-        {
-            if (point.X - _pointerLastPosition.X > minMovement)
-            {
-                // expand marked damaged sample sequence to right
-                Click.ExpandRight();
-                //ThresholdLevelDetected.Text = Click.ErrorLevelDetected.ToString("0.0");
-                changed = true;
-            }
-
-            if (point.X - _pointerLastPosition.X < -minMovement)
-            {
-                // expand marked damaged sample sequence to right
-                Click.ExpandLeft();
-                //ThresholdLevelDetected.Text = Click.ErrorLevelDetected.ToString("0.0");
-                changed = true;
-            }
-        }
-
-        if (_isPointerPressedInTheRightArea && point.X - _pointerLastPosition.X < -minMovement)
-        {
-            // shrink marked damaged sample sequence on right
-            Click.ShrinkRight();
-            //ThresholdLevelDetected.Text = Click.ErrorLevelDetected.ToString("0.0");
-            changed = true;
-        }
-
-        if (_isPointerPressedInTheLeftArea && point.X - _pointerLastPosition.X > minMovement)
-        {
-            // shrink marked damaged sample sequence on right
-            Click.ShrinkLeft();
-            //ThresholdLevelDetected.Text = Click.ErrorLevelDetected.ToString("0.0");
-            changed = true;
-        }
-
-        if (!changed)
-            return;
-
-        SetPolylines();
-        _pointerLastPosition = point;
-    }
-
-    /// <summary>
-    /// Sets margin for ClickWindow
-    /// </summary>
-    /// <param name="marginLeft"></param>
-    /// <param name="marginTop"></param>
-    /* internal void SetMargin(double marginLeft, double marginTop)
-    {
-        var margin = Margin;
-        margin.Left = marginLeft;
-        margin.Top = marginTop;
-        Margin = margin;
-    }
-
-    /// <summary>
-    /// Clears action notification text and calls GridPointerReleased if
-    /// user changed click length
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void GridPointerExited(object sender, PointerRoutedEventArgs e)
-    {
-        ActionNotification.Text = "";
-        // if we are modifying click lenght then fix changes
-        if (_isPointerPressedInTheLeftArea ||
-            _isPointerPressedInTheMidle ||
-            _isPointerPressedInTheRightArea)
-            GridPointerReleased(sender, e);
-    }
-
-    /// <summary>
-    ///     Event handler processing mouse left button or touch screen
-    ///     user actions
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void GridPointerReleased(object sender, PointerRoutedEventArgs e)
-    {
-        var point = e.GetCurrentPoint(this).Position;
-
-        if (_isPointerPressedInTheMidle &&
-            Math.Abs(point.X - _pointPointerPressedInTheMidle.X) < 1 &&
-            Math.Abs(point.Y - _pointPointerPressedInTheMidle.Y) < 1)
-        {
-            // change Aproved property of click
-            Click.ChangeAproved();
-            SetBorderColour();
-        }
-
-        if (_isPointerPressedInTheRightArea &&
-            Math.Abs(point.X - _pointPointerPressedInTheRightArea.X) < 1 &&
-            Math.Abs(point.Y - _pointPointerPressedInTheRightArea.Y) < 1)
-        {
-            // expand marked damaged sample sequence to right
-            Click.ExpandRight();
-            ThresholdLevelDetected.Text = Click.ErrorLevelDetected.ToString("0.0");
-            SetPolylines();
-        }
-
-        if (_isPointerPressedInTheLeftArea &&
-            Math.Abs(point.X - _pointPointerPressedInTheLeftArea.X) < 1 &&
-            Math.Abs(point.Y - _pointPointerPressedInTheLeftArea.Y) < 1)
-        {
-            // expand marked damaged sample sequence to right
-            Click.ExpandLeft();
-            ThresholdLevelDetected.Text = Click.ErrorLevelDetected.ToString("0.0");
-            SetPolylines();
-        }
-
-        _isPointerPressedInTheMidle = false;
-        _isPointerPressedInTheRightArea = false;
-        _isPointerPressedInTheLeftArea = false;
-    } */
-
-    /// <summary>
-    ///     Areas of ClickWindow used to detect user actions
-    /// </summary>
-    private enum Area
-    {
-        LeftExpand,
-        LeftShrink,
-        Midle,
-        RightShrink,
-        RightExpand
+        _editMode = !_editMode;
     }
 }

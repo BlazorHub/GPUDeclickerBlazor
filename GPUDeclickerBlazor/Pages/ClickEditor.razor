@@ -1,0 +1,54 @@
+﻿@using GPUDeclickerUWP.Model.Data
+
+<div class="d-flex">
+    <div class="btn-group-vertical float-left" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-outline-primary" disabled>Begin</button>
+        <button type="button" class="btn btn-outline-primary" @onclick="@ExpandLeft">Wider</button>
+        <button type="button" class="btn btn-outline-primary" @onclick="@ShrinkLeft">Shorter</button>
+    </div>
+
+    <button type="button" class="btn btn-outline-primary align-self-center w-100" @onclick="@ChangeAproved">On/Off</button>
+
+    <div class="btn-group-vertical float-right" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-outline-primary" disabled>End</button>
+        <button type="button" class="btn btn-outline-primary" @onclick="@ExpandRight">Wider</button>
+        <button type="button" class="btn btn-outline-primary" @onclick="@ShrinkRight">Shorter</button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public AudioClick Click { get; set; }
+    [Parameter]
+    public EventCallback OnClickEdited { get; set; }
+
+    private void ChangeAproved(MouseEventArgs e)
+    {
+        Click.ChangeAproved();
+        OnClickEdited.InvokeAsync(e);
+    }
+
+    private void ShrinkLeft(MouseEventArgs e)
+    {
+        Click.ShrinkLeft();
+        OnClickEdited.InvokeAsync(e);
+    }
+
+    private void ExpandLeft(MouseEventArgs e)
+    {
+        Click.ExpandLeft();
+        OnClickEdited.InvokeAsync(e);
+    }
+
+    private void ExpandRight(MouseEventArgs e)
+    {
+        Click.ExpandRight();
+        OnClickEdited.InvokeAsync(e);
+    }
+
+    private void ShrinkRight(MouseEventArgs e)
+    {
+        Click.ShrinkRight();
+        OnClickEdited.InvokeAsync(e);
+    }
+}
