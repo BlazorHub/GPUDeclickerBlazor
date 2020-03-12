@@ -9,7 +9,9 @@
             <tr>
                 @for (var col = 0; (col < ColNumber) && (row * ColNumber + col < ClickArray.Length); col++)
                 {
-                    <td style="padding: @_clickPadding px;"><ClickWindow Click="ClickArray[row * ColNumber + col]" Width="@_clickWidth" Height="@_clickHeight" /></td>
+                    <td style="padding: 10px;">
+                        <ClickWindow Click="ClickArray[row * ColNumber + col]" Width="@_clickWidth" Height="@_clickHeight" />
+                    </td>
                 }
             </tr>
         }
@@ -26,12 +28,10 @@
 
     private int _clickWidth;
     private int _clickHeight;
-    private int _clickPadding;
 
     protected override void OnParametersSet()
     {
         _clickWidth = 300;
         _clickHeight = 200;
-        _clickPadding = 10;
     }
 }
