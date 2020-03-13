@@ -7,10 +7,7 @@
 
 <h3>Viewer</h3>
 
-<div class="card">
-    <h4 class="card-title">Status</h4>
-    <p class="card-text">Number of clicks detected : @GetNumberOfClicks()</p>
-</div>
+<StatusReport NumberOfClicks="@GetNumberOfClicks()"/>
 
 <div class="card">
     <h4 class="card-title">Settings</h4>
@@ -134,9 +131,10 @@
             StateHasChanged();
         }
 
-        private string GetNumberOfClicks() => AppState.AudioData is null
-            ? "0"
-            : AppState.AudioData?.CurrentChannelGetNumberOfClicks().ToString();
+        private int GetNumberOfClicks() => 
+            AppState.AudioData is null
+            ? 0
+            : AppState.AudioData.CurrentChannelGetNumberOfClicks();
 
         private AudioClick[] GetAudioClicks()
         {
