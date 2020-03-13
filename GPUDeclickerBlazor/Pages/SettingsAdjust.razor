@@ -1,0 +1,52 @@
+﻿<div class="card">
+    <h4 class="card-title">Settings</h4>
+
+    <div class="card-body container">
+        <div class="row">
+            <div class="col-sm">
+                <p>Threshold : @Threshold</p>
+                <input type="range" class="custom-range" min="0.5" max="15" step="0.1" @bind-value="@Threshold" />
+            </div>
+            <div class="col-sm">
+                <p>Max repair length : @MaxLength</p>
+                <input type="range" class="custom-range" min="1" max="350" step="1" @bind-value="@MaxLength" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private float _threshold;
+    private int _maxLength;
+
+    [Parameter]
+    public float Threshold 
+    {
+        get { return _threshold; }
+        set
+        {
+            if (_threshold != value)
+            {
+                _threshold = value;
+                SettingsChanged.InvokeAsync((Threshold, MaxLength));
+            }
+        }
+    }
+
+    [Parameter]
+    public int MaxLength 
+    { 
+        get { return _maxLength; }
+        set
+        {
+            if (_maxLength != value)
+            {
+                _maxLength = value;
+                SettingsChanged.InvokeAsync((Threshold, MaxLength));
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<(float, int)> SettingsChanged { get; set; }
+}
