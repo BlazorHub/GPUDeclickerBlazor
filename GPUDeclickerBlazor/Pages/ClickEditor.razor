@@ -16,39 +16,44 @@
     </div>
 </div>
 
+<div class="text-center">
+    <p>Use the controls above to change this click lenght or to exclude/include it into the output file</p>
+    <ClickWindow @ref="_clickWindow" Click="@Click" Width="300" Height="200" />
+</div>
+
 @code {
     [Parameter]
     public AudioClick Click { get; set; }
-    [Parameter]
-    public EventCallback OnClickEdited { get; set; }
+
+    private ClickWindow _clickWindow;
 
     private void ChangeAproved(MouseEventArgs e)
     {
-        Click.ChangeAproved();
-        OnClickEdited.InvokeAsync(e);
+        Click?.ChangeAproved();
+        _clickWindow.Draw();
     }
 
     private void ShrinkLeft(MouseEventArgs e)
     {
-        Click.ShrinkLeft();
-        OnClickEdited.InvokeAsync(e);
+        Click?.ShrinkLeft();
+        _clickWindow.Draw();
     }
 
     private void ExpandLeft(MouseEventArgs e)
     {
-        Click.ExpandLeft();
-        OnClickEdited.InvokeAsync(e);
+        Click?.ExpandLeft();
+        _clickWindow.Draw();
     }
 
     private void ExpandRight(MouseEventArgs e)
     {
-        Click.ExpandRight();
-        OnClickEdited.InvokeAsync(e);
+        Click?.ExpandRight();
+        _clickWindow.Draw();
     }
 
     private void ShrinkRight(MouseEventArgs e)
     {
-        Click.ShrinkRight();
-        OnClickEdited.InvokeAsync(e);
+        Click?.ShrinkRight();
+        _clickWindow.Draw();
     }
 }

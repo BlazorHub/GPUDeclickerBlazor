@@ -1,17 +1,17 @@
 ﻿@using System.Drawing
 @using GPUDeclickerUWP.Model.Data
 
-<h5>@Click.Position x @Click.Length</h5>
-<h6>@Click.ErrorLevelDetected</h6>
+@if (Click is null)
+{
+    <h5>Empty</h5>
+}
+ else
+{
+    <h5>@Click.Position x @Click.Length</h5>
+    <h6>@Click.ErrorLevelDetected</h6>
+}
 
-<div>
-    @if (_editMode)
-    {
-        <ClickEditor Click="@Click" OnClickEdited="@DrawImage" />
-    }
-
-    <img class="mh-100 mw-100" src="data:image/gif;base64,@_imageBase64" @onclick="OnImageClick" />
-</div>
+<img class="mh-100 mw-100" src="data:image/gif;base64,@_imageBase64" @onclick="OnImageClick" />
 
 @code {
     [Parameter]
@@ -20,15 +20,49 @@
     public int Width { get; set; }
     [Parameter]
     public int Height { get; set; }
+    [Parameter]
+    public EventCallback<AudioClick> OnEditorCalled { get; set; }
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
 
-        DrawImage();
+        Draw();
     }
 
-    private void DrawImage()
+    public void Draw()
+    {
+        if (Click is null)
+            DrawEmpty();
+        else
+            DrawClick();
+    }
+
+    private void DrawEmpty()
+    {
+        _image = new Bitmap(Width, Height);
+
+        var graphics = Graphics.FromImage(_image);
+        graphics.Clear(Color.White);
+
+        StringFormat format = new StringFormat();
+        format.LineAlignment = StringAlignment.Center;
+        format.Alignment = StringAlignment.Center;
+        graphics.DrawString(
+            "Empty", 
+            new Font(FontFamily.GenericSansSerif, Height / 3, FontStyle.Regular),
+            Brushes.Gray,
+            new RectangleF(0, 0, Width, Height),
+            format);
+
+        var ms = new System.IO.MemoryStream();
+        _image.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
+        _imageBase64 = Convert.ToBase64String(ms.ToArray());
+
+        graphics.Dispose();
+    }
+
+    private void DrawClick()
     {
         SetBorderColour();
         SetPolylines();
@@ -66,8 +100,6 @@
 
     private Image _image;
     private string _imageBase64;
-
-    private bool _editMode = false;
 
     private void SetBorderColour()
     {
@@ -114,10 +146,8 @@
         _output = output.ToArray();
     }
 
-    private void OnImageClick(
-        MouseEventArgs e)
+    private void OnImageClick(MouseEventArgs e)
     {
-
-        _editMode = !_editMode;
+        OnEditorCalled.InvokeAsync(Click);
     }
 }
