@@ -30,7 +30,10 @@
 </div>
 
 <div>
-    <button class="btn btn-primary float-left" @onclick="ScanAsync">@ScanOrRescan()</button>
+    <div class="float-left">
+        <h4><wbr /></h4> <!--balance Scan button position to compensate the Columns: word-->
+        <button class="btn btn-primary" @onclick="ScanAsync">@ScanOrRescan()</button>
+    </div>
 
     <div class="float-right">
         <h4>Columns:</h4>
@@ -40,116 +43,116 @@
     </div>
 </div>
 
-<div style="clear:both">
-    @if (AppState.AudioData is null)
-    {
-        <h4>Please load audio file</h4>
-    }
-    else
-    {
-        if (_inProcess)
+    <div style="clear:both">
+        @if (AppState.AudioData is null)
         {
-            <h4>@_taskStatus - @String.Format("{0:F2}", _taskProgress)%</h4>
+            <h4>Please load audio file</h4>
         }
         else
         {
-            <ClickCollectionWindow ClickArray="@GetAudioClicks()" Title="Mono" ColNumber="@_colNumber" OnEditorCalled="EditClick"/>
+            if (_inProcess)
+            {
+                <h4>@_taskStatus - @String.Format("{0:F2}", _taskProgress)%</h4>
+            }
+            else
+            {
+                <ClickCollectionWindow ClickArray="@GetAudioClicks()" Title="Mono" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
+            }
         }
-    }
-</div>
+    </div>
 
-@if (_editMode)
-{
-    <div class="modal" tabindex="-1" style="display:block" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Edit Click</h3>
-                    <button type="button" class="close" @onclick="_ => { _editMode = false; }">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <ClickEditor Click="@_clickForEditing" />
+    @if (_editMode)
+    {
+        <div class="modal" tabindex="-1" style="display:block" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Edit Click</h3>
+                        <button type="button" class="close" @onclick="_ => { _editMode = false; }">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <ClickEditor Click="@_clickForEditing" />
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-}
-
-@code {
-
-    private string ScanOrRescan()
-    {
-        return (AppState.AudioData?.CurrentChannelIsPreprocessed() ?? false) ? "Rescan" : "Scan";
     }
 
-    protected override void OnInitialized()
-    {
-        _progress = new Progress<double>((d) => { _taskProgress = d; StateHasChanged(); });
-        _status = new Progress<string>((s) => { _taskStatus = s; StateHasChanged(); });
-    }
+    @code {
 
-    private AudioClick _clickForEditing;
-    private bool _editMode = false;
-
-    private void EditClick(AudioClick clickForEditing)
-    {
-        _clickForEditing = clickForEditing;
-        _editMode = true;
-    }
-
-    private Progress<double> _progress;
-    private Progress<string> _status;
-
-    private double _taskProgress;
-    private string _taskStatus;
-    private bool _inProcess = false;
-
-    private int _colNumber = 4;
-
-    private float _threshold = 5f;
-    private int _maxLength = 250;
-
-    private async void ScanAsync()
-    {
-        // set parameters for scanning
-        AppState.AudioData.AudioProcessingSettings.ThresholdForDetection =
-            _threshold;
-        AppState.AudioData.AudioProcessingSettings.MaxLengthOfCorrection =
-            _maxLength;
-
-        _inProcess = true;
-
-        // scan and repair
-        await Task.Run(() => AudioProcessing.ProcessAudioAsync(
-            AppState.AudioData,
-            _progress,
-            _status));
-
-        _inProcess = false;
-        StateHasChanged();
-    }
-
-    private string GetNumberOfClicks() => AppState.AudioData is null
-        ? "0"
-        : AppState.AudioData?.CurrentChannelGetNumberOfClicks().ToString();
-
-    private AudioClick[] GetAudioClicks()
-    {
-        if (AppState.AudioData is null)
-            return null;
-
-        var clickList = new List<AudioClick>();
-        AppState.AudioData.SortClicks();
-
-        for (var clicksIndex = 0;
-              clicksIndex < AppState.AudioData.CurrentChannelGetNumberOfClicks();
-              clicksIndex++)
+        private string ScanOrRescan()
         {
-            clickList.Add(AppState.AudioData.GetClick(clicksIndex));
+            return (AppState.AudioData?.CurrentChannelIsPreprocessed() ?? false) ? "Rescan" : "Scan";
         }
 
-        return clickList.ToArray();
+        protected override void OnInitialized()
+        {
+            _progress = new Progress<double>((d) => { _taskProgress = d; StateHasChanged(); });
+            _status = new Progress<string>((s) => { _taskStatus = s; StateHasChanged(); });
+        }
+
+        private AudioClick _clickForEditing;
+        private bool _editMode = false;
+
+        private void EditClick(AudioClick clickForEditing)
+        {
+            _clickForEditing = clickForEditing;
+            _editMode = true;
+        }
+
+        private Progress<double> _progress;
+        private Progress<string> _status;
+
+        private double _taskProgress;
+        private string _taskStatus;
+        private bool _inProcess = false;
+
+        private int _colNumber = 4;
+
+        private float _threshold = 5f;
+        private int _maxLength = 250;
+
+        private async void ScanAsync()
+        {
+            // set parameters for scanning
+            AppState.AudioData.AudioProcessingSettings.ThresholdForDetection =
+                _threshold;
+            AppState.AudioData.AudioProcessingSettings.MaxLengthOfCorrection =
+                _maxLength;
+
+            _inProcess = true;
+
+            // scan and repair
+            await Task.Run(() => AudioProcessing.ProcessAudioAsync(
+                AppState.AudioData,
+                _progress,
+                _status));
+
+            _inProcess = false;
+            StateHasChanged();
+        }
+
+        private string GetNumberOfClicks() => AppState.AudioData is null
+            ? "0"
+            : AppState.AudioData?.CurrentChannelGetNumberOfClicks().ToString();
+
+        private AudioClick[] GetAudioClicks()
+        {
+            if (AppState.AudioData is null)
+                return null;
+
+            var clickList = new List<AudioClick>();
+            AppState.AudioData.SortClicks();
+
+            for (var clicksIndex = 0;
+                  clicksIndex < AppState.AudioData.CurrentChannelGetNumberOfClicks();
+                  clicksIndex++)
+            {
+                clickList.Add(AppState.AudioData.GetClick(clicksIndex));
+            }
+
+            return clickList.ToArray();
+        }
     }
-}
