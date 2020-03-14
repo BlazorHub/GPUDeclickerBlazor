@@ -7,14 +7,15 @@
 
 <h3>Viewer</h3>
 
-<StatusReport NumberOfClicks="@GetNumberOfClicks()" />
+<StatusReport NumberOfClicks="@GetNumberOfClicks()" Status="@GetTaskStatus()" Progress="@_taskProgress" />
 
 <SettingsAdjust Threshold="@Threshold" MaxLength="@MaxLength" SettingsChanged="@ChangeSettings" />
 
+<!--Buttons section-->
 <div>
     <div class="float-left">
         <h4><wbr /></h4> <!--balance Scan button position to compensate the Columns: word-->
-        <button class="btn btn-primary" @onclick="ScanAsync">@ScanOrRescan()</button>
+        <button class="btn btn-primary mb-4" @onclick="ScanAsync">@ScanOrRescan()</button>
     </div>
 
     <div class="float-right">
@@ -25,16 +26,13 @@
     </div>
 </div>
 
+<!--Clicks collection-->
 <div style="clear:both">
-    @if (AppState.AudioData is null)
-    {
-        <h4>Please load audio file</h4>
-    }
-    else
+    @if (AppState.AudioData != null)
     {
         if (_inProcess)
         {
-            <h4>@_taskStatus - @String.Format("{0:F2}", _taskProgress)%</h4>
+            <h4>Waiting for results...</h4>
         }
         else
         {
@@ -43,6 +41,7 @@
     }
 </div>
 
+<!--Modal dialog for Click Editor-->
 @if (_editMode)
 {
     <div class="modal" tabindex="-1" style="display:block" role="dialog">
@@ -63,11 +62,23 @@
 }
 
 @code {
+    
+    private Progress<double> _progress;
+    private Progress<string> _status;
+    private double _taskProgress;
+    private string _taskStatus;
 
-    private string ScanOrRescan()
-    {
-        return (AppState.AudioData?.CurrentChannelIsPreprocessed() ?? false) ? "Rescan" : "Scan";
-    }
+    private bool _inProcess = false;
+
+    private int _colNumber = 4;
+
+    // Audio processing parameters
+    public float Threshold = 5f;
+    public int MaxLength = 250;
+
+    // Click Editor parameters
+    private AudioClick _clickForEditing;
+    private bool _editMode = false;
 
     protected override void OnInitialized()
     {
@@ -75,26 +86,19 @@
         _status = new Progress<string>((s) => { _taskStatus = s; StateHasChanged(); });
     }
 
-    private AudioClick _clickForEditing;
-    private bool _editMode = false;
+    private string ScanOrRescan()
+    {
+        if (AppState.AudioData is null || !AppState.AudioData.CurrentChannelIsPreprocessed())
+            return "Scan";
+        else
+            return "Rescan";
+    }
 
     private void EditClick(AudioClick clickForEditing)
     {
         _clickForEditing = clickForEditing;
         _editMode = true;
     }
-
-    private Progress<double> _progress;
-    private Progress<string> _status;
-
-    private double _taskProgress;
-    private string _taskStatus;
-    private bool _inProcess = false;
-
-    private int _colNumber = 4;
-
-    public float Threshold = 5f;
-    public int MaxLength = 250;
 
     public void ChangeSettings((float threshold, int maxLength) settings)
     {
@@ -126,6 +130,11 @@
         AppState.AudioData is null
         ? 0
         : AppState.AudioData.CurrentChannelGetNumberOfClicks();
+
+    private string GetTaskStatus() =>
+        AppState.AudioData is null
+        ? "Please load audio file"
+        : _taskStatus;
 
     private AudioClick[] GetAudioClicks()
     {
