@@ -47,14 +47,14 @@
     private async Task HandleValidSubmit()
     {
         _status = "Loading...";
-        var success = await _audioIO.LoadAudioFromHttpAsync(_viewerModel.Uri);
-        if (success)
+        var result = await _audioIO.LoadAudioFromHttpAsync(new Uri(_viewerModel.Uri));
+        if (result.success)
         {
             AppState.SetAudioData(_audioIO.GetAudioData());
             _status = "Length (in samples) : " + GetLength();
         }
         else
-            _status = "Can not load this one";
+            _status = "Can not load this one: " + result.error;
     }
 
     private string GetLength() => AppState.AudioData is null

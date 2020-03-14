@@ -85,44 +85,64 @@ namespace GPUDeclickerUWP.Model.InputOutput
             return result;
         } */
 
-        public async Task<bool> LoadAudioFromHttpAsync(string url)
+        public async Task<(bool success, string error)> LoadAudioFromHttpAsync(Uri url)
         {
-            return await Task.Run(() => LoadAudioFromHttp(url));
+            return await Task.Run(() => LoadAudioFromHttp(url)).ConfigureAwait(false);
         }
 
-        public bool LoadAudioFromHttp(string url)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We will show load errors to users")]
+        private (bool success, string error) LoadAudioFromHttp(Uri url)
         {
-            using var memoryStream = new MemoryStream();
-            // Get all content to memory stream
-            using (var stream = WebRequest.Create(url)
-                .GetResponse().GetResponseStream())
-            {
-                var buffer = new byte[32768];
-                int byteCount;
-                while ((byteCount = stream.Read(buffer, 0, buffer.Length)) > 0)
-                    memoryStream.Write(buffer, 0, byteCount);
-            }
-
-            // Reset memory stream position
-            memoryStream.Position = 0;
-
-            // Convert content to samples
             List<float> samples = new List<float>();
-            var sampleProvider = new WaveFileReader(memoryStream).ToSampleProvider();
+            var error = String.Empty;
+            bool success;
+
+            try
             {
-                var buffer = new float[16384];
-                int sampleCount;
-                while ((sampleCount = sampleProvider.Read(buffer, 0, buffer.Length)) > 0)
-                    samples.AddRange(buffer.Take(sampleCount));
+                using (var memoryStream = new MemoryStream())
+                {
+                    // Get all content to memory stream
+                    using (var stream = WebRequest.Create(url)
+                        .GetResponse().GetResponseStream())
+                    {
+                        var buffer = new byte[32768];
+                        int byteCount;
+                        while ((byteCount = stream.Read(buffer, 0, buffer.Length)) > 0)
+                            memoryStream.Write(buffer, 0, byteCount);
+                    }
+
+                    // Reset memory stream position
+                    memoryStream.Position = 0;
+
+                    // Convert content to samples
+                    using (var waveReader = new WaveFileReader(memoryStream))
+                    {
+                        var sampleProvider = waveReader.ToSampleProvider();
+
+                        var buffer = new float[16384];
+                        int sampleCount;
+                        while ((sampleCount = sampleProvider.Read(buffer, 0, buffer.Length)) > 0)
+                            samples.AddRange(buffer.Take(sampleCount));
+                    }
+                }
+                error = "OK";
+            }
+            catch (Exception e)
+            {                
+                error = e.Message;
+            }
+            finally
+            {
+                if (samples.Any())
+                {
+                    SetAudioData(new AudioDataMono(samples.ToArray()));
+                    success = true;
+                }
+                else
+                    success = false;
             }
 
-            if (samples.Count() > 0)
-            {
-                SetAudioData(new AudioDataMono(samples.ToArray()));
-                return true;
-            }
-            else
-                return false;
+            return (success, error);
         }
 
             /*
