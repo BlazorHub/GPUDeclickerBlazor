@@ -11,7 +11,7 @@
 <div class="card mb-2">
     <h4 class="card-title">Load audio file using URL (link)</h4>
     <div class="card-text">
-        <EditForm Model="@_viewerModel" OnValidSubmit="HandleValidSubmit">
+        <EditForm Model="@_viewerModel" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="CheckTestUrl">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
@@ -19,11 +19,13 @@
 
             <button type="submit" class="btn btn-primary">Load</button>
 
-            <!--Test buttons-->
-            <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri="https://programmerincanada.com/wp-content/uploads/2020/03/feet_short_short.wav"; })">Shortest Test File</button>
-            <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri="https://programmerincanada.com/wp-content/uploads/2020/03/feet_short.wav"; })">Short Test File</button>
-            <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri="https://programmerincanada.com/wp-content/uploads/2020/03/feet.wav"; })">Full Test File</button>
-
+            @if (_testMode)
+            {
+                <!--Test buttons-->
+                <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet_short_short.wav"; })">Shortest Test File</button>
+                <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet_short.wav"; })">Short Test File</button>
+                <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet.wav"; })">Full Test File</button>
+            }
         </EditForm>
     </div>
 </div>
@@ -31,6 +33,8 @@
 <h4>@_status</h4>
 
 @code {
+
+    private bool _testMode = false;
 
     private string _status;
 
@@ -60,4 +64,10 @@
     private string GetLength() => AppState.AudioData is null
         ? "unknown"
         : AppState.AudioData.LengthSamples().ToString();
+
+    private void CheckTestUrl()
+    {
+        if (_viewerModel.Uri.Equals("test123"))
+            _testMode = true;
+    }
 }
