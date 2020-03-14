@@ -28,9 +28,11 @@
     </div>
 </div>
 
-<h4>Length : @GetLength()</h4>
+<h4>@_status</h4>
 
 @code {
+
+    private string _status;
 
     private class ViewerModel
     {
@@ -42,10 +44,17 @@
     private ViewerModel _viewerModel = new ViewerModel();
     private AudioInputOutput _audioIO = new AudioInputOutput();
 
-    private void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
-        _audioIO.LoadAudioFromHttp(_viewerModel.Uri);
-        AppState.SetAudioData(_audioIO.GetAudioData());
+        _status = "Loading...";
+        var success = await _audioIO.LoadAudioFromHttpAsync(_viewerModel.Uri);
+        if (success)
+        {
+            AppState.SetAudioData(_audioIO.GetAudioData());
+            _status = "Length (in samples) : " + GetLength();
+        }
+        else
+            _status = "Can not load this one";
     }
 
     private string GetLength() => AppState.AudioData is null

@@ -85,6 +85,11 @@ namespace GPUDeclickerUWP.Model.InputOutput
             return result;
         } */
 
+        public async Task<bool> LoadAudioFromHttpAsync(string url)
+        {
+            return await Task.Run(() => LoadAudioFromHttp(url));
+        }
+
         public bool LoadAudioFromHttp(string url)
         {
             using var memoryStream = new MemoryStream();
