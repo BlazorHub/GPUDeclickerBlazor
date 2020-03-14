@@ -14,7 +14,13 @@
 
     <InputText id="uri" @bind-Value="_viewerModel.Uri" />
 
-    <button type="submit">Submit</button>
+    <button type="submit" class="btn btn-primary">Load</button>
+
+    <!--Test buttons-->
+    <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri="https://programmerincanada.com/wp-content/uploads/2020/03/feet_short_short.wav"; })">Shortest Test File</button>
+    <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri="https://programmerincanada.com/wp-content/uploads/2020/03/feet_short.wav"; })">Short Test File</button>
+    <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri="https://programmerincanada.com/wp-content/uploads/2020/03/feet.wav"; })">Full Test File</button>
+
 </EditForm>
 
 <h4>Length : @GetLength()</h4>
