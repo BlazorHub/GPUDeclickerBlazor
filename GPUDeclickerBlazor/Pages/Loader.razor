@@ -8,20 +8,25 @@
 
 <h3>Loader</h3>
 
-<EditForm Model="@_viewerModel" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<div class="card mb-2">
+    <h4 class="card-title">Load audio file using URL (link)</h4>
+    <div class="card-text">
+        <EditForm Model="@_viewerModel" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-    <InputText id="uri" @bind-Value="_viewerModel.Uri" />
+            <InputText id="uri" @bind-Value="_viewerModel.Uri" />
 
-    <button type="submit" class="btn btn-primary">Load</button>
+            <button type="submit" class="btn btn-primary">Load</button>
 
-    <!--Test buttons-->
-    <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri="https://programmerincanada.com/wp-content/uploads/2020/03/feet_short_short.wav"; })">Shortest Test File</button>
-    <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri="https://programmerincanada.com/wp-content/uploads/2020/03/feet_short.wav"; })">Short Test File</button>
-    <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri="https://programmerincanada.com/wp-content/uploads/2020/03/feet.wav"; })">Full Test File</button>
+            <!--Test buttons-->
+            <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri="https://programmerincanada.com/wp-content/uploads/2020/03/feet_short_short.wav"; })">Shortest Test File</button>
+            <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri="https://programmerincanada.com/wp-content/uploads/2020/03/feet_short.wav"; })">Short Test File</button>
+            <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri="https://programmerincanada.com/wp-content/uploads/2020/03/feet.wav"; })">Full Test File</button>
 
-</EditForm>
+        </EditForm>
+    </div>
+</div>
 
 <h4>Length : @GetLength()</h4>
 
