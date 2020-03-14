@@ -3,16 +3,16 @@
 <div class="d-flex">
     <div class="btn-group-vertical float-left" role="group" aria-label="Basic example">
         <button type="button" class="btn btn-outline-primary" disabled>Beginning</button>
-        <button type="button" class="btn btn-outline-primary" @onclick="@ExpandLeft">Wider</button>
-        <button type="button" class="btn btn-outline-primary" @onclick="@ShrinkLeft">Shorter</button>
+        <button type="button" class="btn btn-outline-primary" @onclick="@ExpandLeft">&larr;Wider</button>
+        <button type="button" class="btn btn-outline-primary" @onclick="@ShrinkLeft">Shorter&rarr;</button>
     </div>
 
     <button type="button" class="btn btn-outline-primary align-self-center w-100" @onclick="@ChangeAproved">On/Off</button>
 
     <div class="btn-group-vertical float-right" role="group" aria-label="Basic example">
         <button type="button" class="btn btn-outline-primary" disabled>End</button>
-        <button type="button" class="btn btn-outline-primary" @onclick="@ExpandRight">Wider</button>
-        <button type="button" class="btn btn-outline-primary" @onclick="@ShrinkRight">Shorter</button>
+        <button type="button" class="btn btn-outline-primary" @onclick="@ExpandRight">Wider&rarr;</button>
+        <button type="button" class="btn btn-outline-primary" @onclick="@ShrinkRight">&larr;Shorter</button>
     </div>
 </div>
 
