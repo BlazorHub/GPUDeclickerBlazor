@@ -73,7 +73,7 @@
     private int _colNumber = 4;
 
     // Audio processing parameters
-    public float Threshold = 5f;
+    public float Threshold = 10f;
     public int MaxLength = 250;
 
     // Click Editor parameters
@@ -84,6 +84,11 @@
     {
         _progress = new Progress<double>((d) => { _taskProgress = d; StateHasChanged(); });
         _status = new Progress<string>((s) => { _taskStatus = s; StateHasChanged(); });
+
+        if (AppState.AudioData != null)
+            ChangeSettings(
+                (AppState.AudioData.AudioProcessingSettings.ThresholdForDetection, 
+                AppState.AudioData.AudioProcessingSettings.MaxLengthOfCorrection));
     }
 
     private string ScanOrRescan()
