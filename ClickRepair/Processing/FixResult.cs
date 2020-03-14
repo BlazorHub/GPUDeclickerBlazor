@@ -1,4 +1,6 @@
-﻿namespace GPUDeclickerUWP.Model.Processing
+﻿using System;
+
+namespace GPUDeclickerUWP.Model.Processing
 {
     public class FixResult
     {
@@ -9,6 +11,9 @@
 
         public bool BetterThan(FixResult anotherResult)
         {
+            if (anotherResult is null)
+                throw new ArgumentNullException(nameof(anotherResult));
+
             if (Success && !anotherResult.Success ||
                 Length < anotherResult.Length ||
                 ErrSum / anotherResult.ErrSum < 0.01)

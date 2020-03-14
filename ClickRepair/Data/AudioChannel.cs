@@ -14,7 +14,7 @@ namespace GPUDeclickerUWP.Model.Data
         public AudioChannel(float[] inputSamples)
         {
             ChannelIsPreprocessed = false;
-            var length = inputSamples.Length;
+            var length = inputSamples?.Length ?? 0;
             _input = inputSamples;
             _output = new float[length];
             _predictionErr = new float[length];

@@ -43,7 +43,8 @@ namespace GPUDeclickerUWP.Model.Data
             Length = length;
             ErrorLevelDetected = errorLevelDetected;
             _audioDataOwningThisClick = audioData;
-            ClickChanged += audioData.OnClickChanged;
+            if (audioData != null)
+                ClickChanged += audioData.OnClickChanged;
             FromChannel = fromChannel;
             Aproved = true;
         }
@@ -104,7 +105,7 @@ namespace GPUDeclickerUWP.Model.Data
 
         public static bool operator <(AudioClick left, AudioClick right)
         {
-            if (right is null)
+            if (left is null || right is null)
                 return false;
 
             return left.Position < right.Position;
@@ -112,7 +113,7 @@ namespace GPUDeclickerUWP.Model.Data
 
         public static bool operator <=(AudioClick left, AudioClick right)
         {
-            if (right is null)
+            if (left is null || right is null)
                 return false;
 
             return left.Position <= right.Position;
@@ -120,7 +121,7 @@ namespace GPUDeclickerUWP.Model.Data
 
         public static bool operator >=(AudioClick left, AudioClick right)
         {
-            if (right is null)
+            if (left is null || right is null)
                 return true;
 
             return left.Position >= right.Position;
@@ -128,7 +129,7 @@ namespace GPUDeclickerUWP.Model.Data
 
         public static bool operator >(AudioClick left, AudioClick right)
         {
-            if (right is null)
+            if (left is null || right is null)
                 return true;
 
             return left.Position > right.Position;

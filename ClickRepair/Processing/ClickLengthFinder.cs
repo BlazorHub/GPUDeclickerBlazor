@@ -11,6 +11,9 @@ namespace GPUDeclickerUWP.Model.Processing
             int maxLength,
             int positionOfLastProcessedSample)
         {
+            if (audioData is null)
+                throw new ArgumentNullException(nameof(audioData));
+
             var bestResult = new FixResult
             {
                 Success = false

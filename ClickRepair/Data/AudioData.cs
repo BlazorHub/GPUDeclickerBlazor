@@ -118,8 +118,7 @@ namespace GPUDeclickerUWP.Model.Data
 
         public void OnClickChanged(object source, ClickEventArgs e)
         {
-            var click = source as AudioClick;
-            if (click is null)
+            if (!(source is AudioClick click) || e is null)
                 return;
 
             if (e.Shrinked)

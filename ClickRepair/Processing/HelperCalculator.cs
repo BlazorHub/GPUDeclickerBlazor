@@ -14,13 +14,16 @@ namespace GPUDeclickerUWP.Model.Processing
         /// <param name="audioData"></param>
         /// <param name="startPosition"></param>
         /// <param name="endPosition"></param>
-        /// <param name="_base">number of prediction errors used for calculation</param>
+        /// <param name="base">number of prediction errors used for calculation</param>
         public static void CalculateErrorAverageCpu(
             AudioData audioData,
             int startPosition,
             int endPosition,
-            int _base)
+            int @base)
         {
+            if (audioData is null)
+                throw new ArgumentNullException(nameof(audioData));
+
             var errorAverage =
                 CalcErrorAverageForOneSample(audioData, startPosition);
             // set one average error sample 
@@ -42,7 +45,7 @@ namespace GPUDeclickerUWP.Model.Processing
                 {
                     // find max in the block which will be excluded
                     var tempExcludedBlock = Math.Abs(
-                        audioData.GetPredictionErr(indexCurrent - _base));
+                        audioData.GetPredictionErr(indexCurrent - @base));
                     if (maxErrorInExcludedBlock < tempExcludedBlock)
                         maxErrorInExcludedBlock = tempExcludedBlock;
                     // find max in the block which will be included
@@ -53,9 +56,8 @@ namespace GPUDeclickerUWP.Model.Processing
                 }
 
                 // correction based on previously calculated errorAverage
-                errorAverage = errorAverage +
-                               (maxErrorInIncludedBlock - maxErrorInExcludedBlock) /
-                               ((float)_base / 16);
+                errorAverage += (maxErrorInIncludedBlock - maxErrorInExcludedBlock) /
+                                ((float)@base / 16);
 
                 // minimum result to return is 0.0001
                 if (errorAverage < 0.0001)
@@ -86,7 +88,7 @@ namespace GPUDeclickerUWP.Model.Processing
                 }
 
                 // sum up maximums 
-                errorAverage = errorAverage + maxErrorInBlock;
+                errorAverage += maxErrorInBlock;
             }
 
             // find average
@@ -100,6 +102,9 @@ namespace GPUDeclickerUWP.Model.Processing
 
         public static float CalculateDetectionLevel(AudioData audioData, int position)
         {
+            if (audioData is null)
+                throw new ArgumentNullException(nameof(audioData));
+
             // use original input samples 
             var error = Math.Abs(CalcBurgPredFromInput(audioData, position));
             // find average error value on the LEFT of the current sample
@@ -137,6 +142,9 @@ namespace GPUDeclickerUWP.Model.Processing
         /// <returns></returns>
         public static int GetMaxLength(AudioData audioData, int position)
         {
+            if (audioData is null)
+                throw new ArgumentNullException(nameof(audioData));
+
             var lenght = 0;
             var error = Math.Abs(audioData.GetPredictionErr(position));
             var errorAverage = audioData.GetErrorAverage(position - 15);
@@ -145,7 +153,7 @@ namespace GPUDeclickerUWP.Model.Processing
                         errorAverage);
             while (error > errorAverage)
             {
-                lenght = lenght + 3;
+                lenght += 3;
                 error = (Math.Abs(audioData.GetPredictionErr(position + lenght)) +
                          Math.Abs(audioData.GetPredictionErr(position + 1 + lenght)) +
                          Math.Abs(audioData.GetPredictionErr(position + 2 + lenght))) / 3;

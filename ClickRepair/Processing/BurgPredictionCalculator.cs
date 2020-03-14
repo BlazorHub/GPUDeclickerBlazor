@@ -17,6 +17,13 @@ namespace GPUDeclickerUWP.Model.Processing
             int coefficientsNumber,
             int historyLengthSamples)
         {
+            if (inputaudio is null)
+                throw new ArgumentNullException(nameof(inputaudio));
+            if (forwardPredictions is null)
+                throw new ArgumentNullException(nameof(forwardPredictions));
+            if (backwardPredictions is null)
+                throw new ArgumentNullException(nameof(backwardPredictions));
+
             var b = new double[historyLengthSamples];
             var f = new double[historyLengthSamples];
             var a = new double[coefficientsNumber + 1];

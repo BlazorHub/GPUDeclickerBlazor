@@ -9,6 +9,9 @@ namespace GPUDeclickerUWP.Model.Processing
             AudioData audioData,
             int position)
         {
+            if (audioData is null)
+                throw new ArgumentNullException(nameof(audioData));
+
             var error = Math.Abs(audioData.GetPredictionErr(position));
 
             // usualy average prediction error is stable in 10-20

@@ -87,6 +87,9 @@ namespace GPUDeclickerUWP.Model.Processing
             IProgress<double> progress,
             IProgress<string> status)
         {
+            if (audioData is null)
+                throw new ArgumentNullException(nameof(audioData));
+
             // clear clicks collected from previous scanning
             audioData.ClearAllClicks();
 
@@ -95,7 +98,7 @@ namespace GPUDeclickerUWP.Model.Processing
                 audioData,
                 progress,
                 status)
-            );
+            ).ConfigureAwait(false);
 
             if (audioData.IsStereo)
             {
@@ -104,9 +107,10 @@ namespace GPUDeclickerUWP.Model.Processing
                     audioData,
                     progress,
                     status)
-                );
+                ).ConfigureAwait(false);
             }
         }
+
 
         /// <summary>
         /// Scans channel to find damaged samples
@@ -115,6 +119,7 @@ namespace GPUDeclickerUWP.Model.Processing
         /// <param name="progress"></param>
         /// <param name="status"></param>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         private static async Task ProcessChannelAsync(
             AudioData audioData,
             IProgress<double> progress,
@@ -154,7 +159,8 @@ namespace GPUDeclickerUWP.Model.Processing
 
             SetStatus(audioData, status, "scanning");
 
-            await Task.Run(() => ScanAudioAsync(audioData, progress));
+            await Task.Run(() => ScanAudioAsync(audioData, progress))
+                .ConfigureAwait(false);
 
             status.Report("");
         }
@@ -220,16 +226,18 @@ namespace GPUDeclickerUWP.Model.Processing
                             segmentBeginning,
                             segmentEnd,
                             progress,
-                            index
-                        ));
+                            index),
+                        new System.Threading.CancellationToken(false), 
+                        TaskCreationOptions.LongRunning, 
+                        TaskScheduler.Default);
                 }
                 // need time to start task
-                await Task.Delay(50);
+                await Task.Delay(50).ConfigureAwait(false);
             }
 
             // wait for all tasks to be finished
             for (var cpuCore = 0; cpuCore < cpuCoreNumber; cpuCore++)
-                await tasks[cpuCore];
+                await tasks[cpuCore].ConfigureAwait(false);
 
             // when all threads finished clear progress bar
             progress.Report(0);

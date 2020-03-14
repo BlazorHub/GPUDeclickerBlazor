@@ -1,4 +1,5 @@
 ﻿using GPUDeclickerUWP.Model.Data;
+using System;
 
 namespace GPUDeclickerUWP.Model.Processing
 {
@@ -13,6 +14,9 @@ namespace GPUDeclickerUWP.Model.Processing
         /// <param name="lenght"></param>
         public static float Repair(AudioData audioData, int position, int lenght)
         {
+            if (audioData is null)
+                throw new ArgumentNullException(nameof(audioData));
+
             for (var index = position; index < position + lenght; index++)
             {
                 audioData.SetPredictionErr(index, 0.001F);
@@ -49,6 +53,8 @@ namespace GPUDeclickerUWP.Model.Processing
             AudioData audioData,
             int position)
         {
+            if (audioData is null)
+                throw new ArgumentNullException(nameof(audioData));
 
             var historyLengthSamples =
                 audioData.AudioProcessingSettings.HistoryLengthSamples;
