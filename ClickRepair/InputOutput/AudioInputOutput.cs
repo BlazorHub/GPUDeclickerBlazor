@@ -127,6 +127,7 @@ namespace GPUDeclickerUWP.Model.InputOutput
                                 // Mono
                                 samplesLeft.AddRange(buffer.Take(sampleCount));
                             else if (sampleProvider.WaveFormat.Channels == 2)
+                                // Stereo
                                 for (var index = 0; index < sampleCount; index += 2)
                                 {
                                     samplesLeft.Add(buffer[index]);
@@ -143,7 +144,12 @@ namespace GPUDeclickerUWP.Model.InputOutput
             }
             finally
             {
-                if (samplesLeft.Any())
+                if (samplesRight.Any())
+                {
+                    SetAudioData(new AudioDataStereo(samplesLeft.ToArray(), samplesRight.ToArray()));
+                    success = true;
+                }
+                else if (samplesLeft.Any())
                 {
                     SetAudioData(new AudioDataMono(samplesLeft.ToArray()));
                     success = true;
