@@ -1,15 +1,25 @@
-﻿<div class="card mb-2">
+﻿@inject Data.AppState  AppState
+
+<div class="card mb-2">
     <h4 class="card-title">Status</h4>
-    <p class="card-text">Number of clicks detected : @NumberOfClicks</p>
-    <p class="card-text">Current task : @Status</p>
+    <p class="card-text">Number of clicks detected : @GetNumberOfClicks()</p>
+    <p class="card-text">Current task : @GetTaskStatus()</p>
     <p class="card-text">Progress : @String.Format("{0:F2}", Progress)%</p>
 </div>
 
 @code {
     [Parameter]
-    public int NumberOfClicks { get; set; }
-    [Parameter]
     public string Status { get; set; }
     [Parameter]
     public double Progress { get; set; }
+
+    private int GetNumberOfClicks() =>
+        AppState.AudioData is null
+        ? 0
+        : AppState.AudioData.CurrentChannelGetNumberOfClicks();
+
+    private string GetTaskStatus() =>
+        AppState.AudioData is null
+        ? "Please load audio file"
+        : Status;
 }

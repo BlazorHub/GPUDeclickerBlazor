@@ -7,7 +7,7 @@
 
 <h3>Viewer</h3>
 
-<StatusReport NumberOfClicks="@GetNumberOfClicks()" Status="@GetTaskStatus()" Progress="@_taskProgress" />
+<StatusReport Status="@_taskStatus" Progress="@_taskProgress" />
 
 <SettingsAdjust />
 
@@ -109,16 +109,6 @@
         _inProcess = false;
         StateHasChanged();
     }
-
-    private int GetNumberOfClicks() =>
-        AppState.AudioData is null
-        ? 0
-        : AppState.AudioData.CurrentChannelGetNumberOfClicks();
-
-    private string GetTaskStatus() =>
-        AppState.AudioData is null
-        ? "Please load audio file"
-        : _taskStatus;
 
     private AudioClick[] GetAudioClicks()
     {
