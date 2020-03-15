@@ -93,7 +93,8 @@ namespace GPUDeclickerUWP.Model.InputOutput
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We will show load errors to users")]
         private (bool success, string error) LoadAudioFromHttp(Uri url)
         {
-            List<float> samples = new List<float>();
+            List<float> samplesLeft = new List<float>();
+            List<float> samplesRight = new List<float>();
             var error = String.Empty;
             bool success;
 
@@ -122,7 +123,16 @@ namespace GPUDeclickerUWP.Model.InputOutput
                         var buffer = new float[16384];
                         int sampleCount;
                         while ((sampleCount = sampleProvider.Read(buffer, 0, buffer.Length)) > 0)
-                            samples.AddRange(buffer.Take(sampleCount));
+                            if (sampleProvider.WaveFormat.Channels == 1)
+                                // Mono
+                                samplesLeft.AddRange(buffer.Take(sampleCount));
+                            else if (sampleProvider.WaveFormat.Channels == 2)
+                                for (var index = 0; index < sampleCount; index += 2)
+                                {
+                                    samplesLeft.Add(buffer[index]);
+                                    samplesRight.Add(buffer[index + 1]);
+                                }
+                            else throw new FormatException("More than two channels audio not supported");
                     }
                 }
                 error = "OK";
@@ -133,9 +143,9 @@ namespace GPUDeclickerUWP.Model.InputOutput
             }
             finally
             {
-                if (samples.Any())
+                if (samplesLeft.Any())
                 {
-                    SetAudioData(new AudioDataMono(samples.ToArray()));
+                    SetAudioData(new AudioDataMono(samplesLeft.ToArray()));
                     success = true;
                 }
                 else
