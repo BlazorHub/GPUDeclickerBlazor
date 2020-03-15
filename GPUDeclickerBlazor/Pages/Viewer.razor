@@ -9,7 +9,7 @@
 
 <StatusReport NumberOfClicks="@GetNumberOfClicks()" Status="@GetTaskStatus()" Progress="@_taskProgress" />
 
-<SettingsAdjust Threshold="@Threshold" MaxLength="@MaxLength" SettingsChanged="@ChangeSettings" />
+<SettingsAdjust />
 
 <!--Buttons section-->
 <div>
@@ -72,10 +72,6 @@
 
     private int _colNumber = 4;
 
-    // Audio processing parameters
-    public float Threshold = 10f;
-    public int MaxLength = 250;
-
     // Click Editor parameters
     private AudioClick _clickForEditing;
     private bool _editMode = false;
@@ -84,11 +80,6 @@
     {
         _progress = new Progress<double>((d) => { _taskProgress = d; StateHasChanged(); });
         _status = new Progress<string>((s) => { _taskStatus = s; StateHasChanged(); });
-
-        if (AppState.AudioData != null)
-            ChangeSettings(
-                (AppState.AudioData.AudioProcessingSettings.ThresholdForDetection, 
-                AppState.AudioData.AudioProcessingSettings.MaxLengthOfCorrection));
     }
 
     private string ScanOrRescan()
@@ -105,20 +96,8 @@
         _editMode = true;
     }
 
-    public void ChangeSettings((float threshold, int maxLength) settings)
-    {
-        Threshold = settings.threshold;
-        MaxLength = settings.maxLength;
-    }
-
     private async void ScanAsync()
     {
-        // set parameters for scanning
-        AppState.AudioData.AudioProcessingSettings.ThresholdForDetection =
-            Threshold;
-        AppState.AudioData.AudioProcessingSettings.MaxLengthOfCorrection =
-            MaxLength;
-
         _inProcess = true;
 
         // scan and repair
