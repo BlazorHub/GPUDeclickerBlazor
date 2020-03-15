@@ -1,5 +1,7 @@
 ﻿@inject Data.AppState  AppState
 
+@using GPUDeclickerUWP.Model.Data;
+
 <div class="card mb-2">
     <h4 class="card-title">Status</h4>
     <p class="card-text">Number of clicks detected : @GetNumberOfClicks()</p>
@@ -16,7 +18,7 @@
     private int GetNumberOfClicks() =>
         AppState.AudioData is null
         ? 0
-        : AppState.AudioData.CurrentChannelGetNumberOfClicks();
+        : AppState.AudioData.GetTotalNumberOfClicks();
 
     private string GetTaskStatus() =>
         AppState.AudioData is null

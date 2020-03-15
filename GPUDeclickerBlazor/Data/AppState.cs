@@ -57,12 +57,13 @@ namespace GPUDeclickerBlazor.Data
 
         private void NotifyAudioDataChanged() => OnAudioChange?.Invoke();
 
-        public AudioClick[] GetAudioClicks()
+        public AudioClick[] GetAudioClicks(ChannelType channelType)
         {
             if (AudioData is null)
                 return null;
 
             var clickList = new List<AudioClick>();
+            AudioData.SetCurrentChannelType(channelType);
             AudioData.SortClicks();
 
             for (var clicksIndex = 0;

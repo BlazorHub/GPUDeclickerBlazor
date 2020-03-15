@@ -38,5 +38,10 @@ namespace GPUDeclickerUWP.Model.Data
         {
             _monoChannel.SortClicks();
         }
+
+        public override int GetTotalNumberOfClicks()
+        {
+            return _monoChannel.GetNumberOfClicks();
+        }
     }
 }

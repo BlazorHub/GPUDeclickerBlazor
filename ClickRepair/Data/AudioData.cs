@@ -11,7 +11,7 @@ namespace GPUDeclickerUWP.Model.Data
     public abstract class AudioData
     {
         internal AudioChannel CurrentAudioChannel;
-        internal bool IsStereo;
+        public bool IsStereo { get; set; }
 
         public AudioProcessingSettings AudioProcessingSettings { get; protected set; }
 
@@ -19,6 +19,7 @@ namespace GPUDeclickerUWP.Model.Data
         public abstract void SetCurrentChannelType(ChannelType channelType);
         public abstract void ClearAllClicks();
         public abstract void SortClicks();
+        public abstract int GetTotalNumberOfClicks();
 
         public int LengthSamples()
         {

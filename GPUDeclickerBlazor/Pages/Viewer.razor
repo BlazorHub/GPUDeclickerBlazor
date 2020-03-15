@@ -36,7 +36,18 @@
         }
         else
         {
-            <ClickCollectionWindow ClickArray="@AppState.GetAudioClicks()" Title="Mono" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
+            if (AppState.AudioData.CurrentChannelIsPreprocessed())
+            {
+                if (AppState.AudioData.IsStereo)
+                {
+                <ClickCollectionWindow ClickArray="@AppState.GetAudioClicks(ChannelType.Left)" Title="Left channel" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
+                <ClickCollectionWindow ClickArray="@AppState.GetAudioClicks(ChannelType.Right)" Title="Right channel" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
+                }
+                else
+                {
+                <ClickCollectionWindow ClickArray="@AppState.GetAudioClicks(ChannelType.Left)" Title="Mono" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
+                }
+            }
         }
     }
 </div>
