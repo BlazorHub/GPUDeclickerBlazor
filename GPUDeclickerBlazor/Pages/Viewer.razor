@@ -36,7 +36,7 @@
         }
         else
         {
-            <ClickCollectionWindow ClickArray="@GetAudioClicks()" Title="Mono" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
+            <ClickCollectionWindow ClickArray="@AppState.GetAudioClicks()" Title="Mono" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
         }
     }
 </div>
@@ -108,23 +108,5 @@
 
         _inProcess = false;
         StateHasChanged();
-    }
-
-    private AudioClick[] GetAudioClicks()
-    {
-        if (AppState.AudioData is null)
-            return null;
-
-        var clickList = new List<AudioClick>();
-        AppState.AudioData.SortClicks();
-
-        for (var clicksIndex = 0;
-                clicksIndex < AppState.AudioData.CurrentChannelGetNumberOfClicks();
-                clicksIndex++)
-        {
-            clickList.Add(AppState.AudioData.GetClick(clicksIndex));
-        }
-
-        return clickList.ToArray();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using GPUDeclickerUWP.Model.Data;
 using System;
+using System.Collections.Generic;
 
 namespace GPUDeclickerBlazor.Data
 {
@@ -55,5 +56,23 @@ namespace GPUDeclickerBlazor.Data
         }
 
         private void NotifyAudioDataChanged() => OnAudioChange?.Invoke();
+
+        public AudioClick[] GetAudioClicks()
+        {
+            if (AudioData is null)
+                return null;
+
+            var clickList = new List<AudioClick>();
+            AudioData.SortClicks();
+
+            for (var clicksIndex = 0;
+                    clicksIndex < AudioData.CurrentChannelGetNumberOfClicks();
+                    clicksIndex++)
+            {
+                clickList.Add(AudioData.GetClick(clicksIndex));
+            }
+
+            return clickList.ToArray();
+        }
     }
 }
