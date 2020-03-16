@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -116,6 +117,7 @@ namespace GPUDeclickerUWP.Model.InputOutput
                     memoryStream.Position = 0;
 
                     // Convert content to samples
+                    if (url.ToString().EndsWith("wav", true, CultureInfo.InvariantCulture))
                     using (var waveReader = new WaveFileReader(memoryStream))
                     {
                         var sampleProvider = waveReader.ToSampleProvider();
@@ -133,8 +135,32 @@ namespace GPUDeclickerUWP.Model.InputOutput
                                     samplesLeft.Add(buffer[index]);
                                     samplesRight.Add(buffer[index + 1]);
                                 }
-                            else throw new FormatException("More than two channels audio not supported");
-                    }
+                            else 
+                                throw new FormatException("More than two channels audio not supported");
+                    } 
+                    else if (url.ToString().EndsWith("mp3", true, CultureInfo.InvariantCulture))
+                        using (var waveReader = new Mp3FileReader(memoryStream))
+                        {
+                            var sampleProvider = waveReader.ToSampleProvider();
+
+                            var buffer = new float[16384];
+                            int sampleCount;
+                            while ((sampleCount = sampleProvider.Read(buffer, 0, buffer.Length)) > 0)
+                                if (sampleProvider.WaveFormat.Channels == 1)
+                                    // Mono
+                                    samplesLeft.AddRange(buffer.Take(sampleCount));
+                                else if (sampleProvider.WaveFormat.Channels == 2)
+                                    // Stereo
+                                    for (var index = 0; index < sampleCount; index += 2)
+                                    {
+                                        samplesLeft.Add(buffer[index]);
+                                        samplesRight.Add(buffer[index + 1]);
+                                    }
+                                else 
+                                    throw new FormatException("More than two channels audio not supported");
+                        }
+                    else
+                        throw new FormatException("This audio file not supported");
                 }
                 error = "OK";
             }
