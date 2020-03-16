@@ -51,6 +51,13 @@
     private ViewerModel _viewerModel = new ViewerModel();
     private AudioInputOutput _audioIO = new AudioInputOutput();
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _status = AppState.AudioData is null ? "Please load audio" : "Audio is loaded";
+    }
+
     private async Task HandleValidSubmit()
     {
         _status = "Loading...";
