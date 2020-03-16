@@ -22,10 +22,12 @@
             @if (_testMode)
             {
                 <!--Test buttons-->
-                <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet_short_short.wav"; })">Shortest Test File</button>
-                <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet_short.wav"; })">Short Test File</button>
-                <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet.wav"; })">Full Test File</button>
-                <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet_short_stereo.wav"; })">Short (stereo) Test File</button>
+        <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet_short_short.wav"; })">Shortest WAV File</button>
+                <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet_short.wav"; })">Short WAV File</button>
+                <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet.wav"; })">Full WAV File</button>
+                <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet_short_stereo.wav"; })">Short (stereo) WAV File</button>
+                <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet_short.mp3"; })">Short (mono) MP3 File</button>
+                <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet_short_stereo.mp3"; })">Short (stereo) MP3 File</button>
             }
         </EditForm>
     </div>
