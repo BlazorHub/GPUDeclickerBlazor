@@ -33,6 +33,18 @@
     </div>
 </div>
 
+<div class="card mb-2">
+    <h4 class="card-title">Load your local audio file</h4>
+    <div class="card-text">
+        <EditForm Model="@_viewerModel" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="CheckTestUrl">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <InputFile class="btn-primary" OnChange="HandleFileSelected" />
+        </EditForm>
+    </div>
+</div>
+
 <h4>@_status</h4>
 
 @code {
@@ -79,5 +91,10 @@
     {
         if (_viewerModel.Uri.Equals("test123"))
             _testMode = true;
+    }
+
+    void HandleFileSelected(IFileListEntry[] files)
+    {
+        // Do something with the files, e.g., read them
     }
 }
