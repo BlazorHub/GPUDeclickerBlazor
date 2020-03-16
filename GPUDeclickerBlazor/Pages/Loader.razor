@@ -40,7 +40,7 @@
             <DataAnnotationsValidator />
             <ValidationSummary />
 
-            <InputFile class="btn-primary" OnChange="HandleFileSelected" />
+            <InputFile OnChange="HandleFileSelected" />
         </EditForm>
     </div>
 </div>
@@ -93,8 +93,18 @@
             _testMode = true;
     }
 
-    void HandleFileSelected(IFileListEntry[] files)
+    private async void HandleFileSelected(IFileListEntry[] files)
     {
-        // Do something with the files, e.g., read them
+        _status = "Loading...";
+        var file = files.FirstOrDefault();
+        var result = await _audioIO.LoadAudioFromStreamAsync(file.Data, file.Name);
+        if (result.success)
+        {
+            AppState.SetAudioData(_audioIO.GetAudioData());
+            _status = "Length (in samples) : " + GetLength();
+        }
+        else
+            _status = "Can not load this one: " + result.error;
+        StateHasChanged();
     }
 }

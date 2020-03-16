@@ -27,12 +27,19 @@ namespace GPUDeclickerUWP.Model.InputOutput
 
         public async Task<(bool success, string error)> LoadAudioFromHttpAsync(Uri url)
         {
-            return await Task.Run(() => LoadAudioFromHttp(url)).ConfigureAwait(false);
+            if (url is null)
+                return (false, "URL can not be null");
+
+            using var stream = GetStreamFromUrl(url);
+            return await LoadAudioFromStreamAsync(stream, url.ToString()).ConfigureAwait(false);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We will show load errors to users")]
-        private (bool success, string error) LoadAudioFromHttp(Uri url)
+        public async Task<(bool success, string error)> LoadAudioFromStreamAsync(Stream stream, string name)
         {
+            if (stream is null || name is null)
+                return (false, "Stream or Name can not be null");
+
             List<float> samplesLeft = new List<float>();
             List<float> samplesRight = new List<float>();
             var error = String.Empty;
@@ -40,10 +47,10 @@ namespace GPUDeclickerUWP.Model.InputOutput
 
             try
             {
-                // Get content
-                using (var memoryStream = GetStreamFromUrl(url))
+                using (var memoryStream = await GetContentFromStreamAsync(stream)
+                    .ConfigureAwait(false))
                     // Convert content to samples
-                    using (var reader = GetReader(url, memoryStream))
+                    using (var reader = GetReader(name, memoryStream))
                         GetSamples(reader.ToSampleProvider(), ref samplesLeft, ref samplesRight);
                 
                 error = "OK";
@@ -71,19 +78,20 @@ namespace GPUDeclickerUWP.Model.InputOutput
             return (success, error);
         }
 
-        private static MemoryStream GetStreamFromUrl(Uri url)
+        private static Stream GetStreamFromUrl(Uri url)
+        {
+            return WebRequest.Create(url)
+                .GetResponse().GetResponseStream();
+        }
+
+        private static async Task<MemoryStream> GetContentFromStreamAsync(Stream stream)
         {
             var memoryStream = new MemoryStream();
 
-            // Get all content to memory stream
-            using (var stream = WebRequest.Create(url)
-                .GetResponse().GetResponseStream())
-            {
-                var bufferDownload = new byte[32768];
-                int byteCount;
-                while ((byteCount = stream.Read(bufferDownload, 0, bufferDownload.Length)) > 0)
-                    memoryStream.Write(bufferDownload, 0, byteCount);
-            }
+            var buffer = new byte[32768];
+            int byteCount;
+            while ((byteCount = await stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
+                memoryStream.Write(buffer, 0, byteCount);
 
             // Reset memory stream position
             memoryStream.Position = 0;
@@ -92,11 +100,11 @@ namespace GPUDeclickerUWP.Model.InputOutput
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        private static WaveStream GetReader(Uri url, MemoryStream memoryStream)
+        private static WaveStream GetReader(string fileName, MemoryStream memoryStream)
         {
-            if (url.ToString().EndsWith("wav", true, CultureInfo.InvariantCulture))
+            if (fileName.EndsWith("wav", true, CultureInfo.InvariantCulture))
                 return new WaveFileReader(memoryStream);
-            else if (url.ToString().EndsWith("mp3", true, CultureInfo.InvariantCulture))
+            else if (fileName.EndsWith("mp3", true, CultureInfo.InvariantCulture))
                 return new Mp3FileReader(
                     memoryStream, 
                     new Mp3FileReader.FrameDecompressorBuilder(wf => new Mp3FrameDecompressor(wf)));
