@@ -101,67 +101,12 @@ namespace GPUDeclickerUWP.Model.InputOutput
 
             try
             {
-                using (var memoryStream = new MemoryStream())
-                {
-                    // Get all content to memory stream
-                    using (var stream = WebRequest.Create(url)
-                        .GetResponse().GetResponseStream())
-                    {
-                        var buffer = new byte[32768];
-                        int byteCount;
-                        while ((byteCount = stream.Read(buffer, 0, buffer.Length)) > 0)
-                            memoryStream.Write(buffer, 0, byteCount);
-                    }
-
-                    // Reset memory stream position
-                    memoryStream.Position = 0;
-
+                // Get content
+                using (var memoryStream = GetStreamFromUrl(url))
                     // Convert content to samples
-                    if (url.ToString().EndsWith("wav", true, CultureInfo.InvariantCulture))
-                    using (var waveReader = new WaveFileReader(memoryStream))
-                    {
-                        var sampleProvider = waveReader.ToSampleProvider();
-
-                        var buffer = new float[16384];
-                        int sampleCount;
-                        while ((sampleCount = sampleProvider.Read(buffer, 0, buffer.Length)) > 0)
-                            if (sampleProvider.WaveFormat.Channels == 1)
-                                // Mono
-                                samplesLeft.AddRange(buffer.Take(sampleCount));
-                            else if (sampleProvider.WaveFormat.Channels == 2)
-                                // Stereo
-                                for (var index = 0; index < sampleCount; index += 2)
-                                {
-                                    samplesLeft.Add(buffer[index]);
-                                    samplesRight.Add(buffer[index + 1]);
-                                }
-                            else 
-                                throw new FormatException("More than two channels audio not supported");
-                    } 
-                    else if (url.ToString().EndsWith("mp3", true, CultureInfo.InvariantCulture))
-                        using (var waveReader = new Mp3FileReader(memoryStream))
-                        {
-                            var sampleProvider = waveReader.ToSampleProvider();
-
-                            var buffer = new float[16384];
-                            int sampleCount;
-                            while ((sampleCount = sampleProvider.Read(buffer, 0, buffer.Length)) > 0)
-                                if (sampleProvider.WaveFormat.Channels == 1)
-                                    // Mono
-                                    samplesLeft.AddRange(buffer.Take(sampleCount));
-                                else if (sampleProvider.WaveFormat.Channels == 2)
-                                    // Stereo
-                                    for (var index = 0; index < sampleCount; index += 2)
-                                    {
-                                        samplesLeft.Add(buffer[index]);
-                                        samplesRight.Add(buffer[index + 1]);
-                                    }
-                                else 
-                                    throw new FormatException("More than two channels audio not supported");
-                        }
-                    else
-                        throw new FormatException("This audio file not supported");
-                }
+                    using (var reader = GetReader(url, memoryStream))
+                        GetSamples(reader.ToSampleProvider(), ref samplesLeft, ref samplesRight);
+                
                 error = "OK";
             }
             catch (Exception e)
@@ -187,91 +132,143 @@ namespace GPUDeclickerUWP.Model.InputOutput
             return (success, error);
         }
 
-            /*
-        /// <summary>
-        ///     Creates instances of FileInputNode, FrameOutputNode, AudioData
-        ///     starts AudioGraph, waits till loading of samples is finished
-        /// </summary>
-        /// <param name="file"> Input audio file</param>
-        /// <param name="status"></param>
-        public async Task<CreateAudioFileInputNodeResult>
-            LoadAudioFromFile(
-                StorageFile file,
-                IProgress<string> status)
+        private static MemoryStream GetStreamFromUrl(Uri url)
         {
-            _finished = false;
-            status.Report("Reading audio file");
+            var memoryStream = new MemoryStream();
 
-            // Initialize FileInputNode
-            var inputNodeCreationResult =
-                await _audioGraph.CreateFileInputNodeAsync(file);
+            // Get all content to memory stream
+            using (var stream = WebRequest.Create(url)
+                .GetResponse().GetResponseStream())
+            {
+                var bufferDownload = new byte[32768];
+                int byteCount;
+                while ((byteCount = stream.Read(bufferDownload, 0, bufferDownload.Length)) > 0)
+                    memoryStream.Write(bufferDownload, 0, byteCount);
+            }
 
-            if (inputNodeCreationResult.Status != AudioFileNodeCreationStatus.Success)
-                return inputNodeCreationResult;
+            // Reset memory stream position
+            memoryStream.Position = 0;
 
-            _fileInputNode = inputNodeCreationResult.FileInputNode;
-
-
-            // Read audio file encoding properties to pass them 
-            //to FrameOutputNode creator
-
-            var audioEncodingProperties =
-                _fileInputNode.EncodingProperties;
-
-            // Initialize FrameOutputNode and connect it to fileInputNode
-            _frameOutputNode = _audioGraph.CreateFrameOutputNode(
-                audioEncodingProperties
-            );
-            _frameOutputNode.Stop();
-            _fileInputNode.AddOutgoingConnection(_frameOutputNode);
-
-            // Add a handler for achiving the end of a file
-            _fileInputNode.FileCompleted += FileInput_FileCompleted;
-            // Add a handler which will transfer every audio frame into audioData 
-            _audioGraph.QuantumStarted += FileInput_QuantumStarted;
-
-            // Initialize audioData
-            var numOfSamples = (int) Math.Ceiling(
-                (decimal) 0.0000001
-                * _fileInputNode.Duration.Ticks
-                * _fileInputNode.EncodingProperties.SampleRate
-            );
-            if (audioEncodingProperties.ChannelCount == 1)
-                SetAudioData(new AudioDataMono(new float[numOfSamples]));
-            else
-                SetAudioData(new AudioDataStereo(new float[numOfSamples],
-                    new float[numOfSamples]));
-
-            _audioDataCurrentPosition = 0;
-
-            // Start process which will read audio file frame by frame
-            // and will generated events QuantumStarted when a frame is in memory
-            _audioGraph.Start();
-
-            // didn't find a better way to wait for data
-            while (!_finished)
-                await Task.Delay(50);
-
-            // crear status line
-            status.Report("");
-
-            return inputNodeCreationResult;
-        } */
-
-            /*
-        /// <summary>
-        ///     Starts when reading of samples from input audio file finished
-        /// </summary>
-        private void FileInput_FileCompleted(AudioFileInputNode sender, object args)
-        {
-            _audioGraph.Stop();
-            _frameOutputNode?.Stop();
-            _audioGraph.Dispose();
-            _audioGraph = null;
-            _finished = true;
-            _ioProgress?.Report(0);
+            return memoryStream;
         }
-        */
+
+        private static WaveStream GetReader(Uri url, MemoryStream memoryStream)
+        {
+            if (url.ToString().EndsWith("wav", true, CultureInfo.InvariantCulture))
+                return new WaveFileReader(memoryStream);
+            else if (url.ToString().EndsWith("mp3", true, CultureInfo.InvariantCulture))
+                return new Mp3FileReader(memoryStream);
+            else
+                throw new FormatException("This audio file not supported");
+        }
+
+        private static void GetSamples(ISampleProvider sampleProvider, ref List<float> samplesLeft, ref List<float> samplesRight)
+        {
+            if (sampleProvider is null)
+                throw new FormatException("Sample provider was not set");
+
+            var bufferSamples = new float[16384];
+            int sampleCount;
+            while ((sampleCount = sampleProvider.Read(bufferSamples, 0, bufferSamples.Length)) > 0)
+                if (sampleProvider.WaveFormat.Channels == 1)
+                    // Mono
+                    samplesLeft.AddRange(bufferSamples.Take(sampleCount));
+                else if (sampleProvider.WaveFormat.Channels == 2)
+                    // Stereo
+                    for (var index = 0; index < sampleCount; index += 2)
+                    {
+                        samplesLeft.Add(bufferSamples[index]);
+                        samplesRight.Add(bufferSamples[index + 1]);
+                    }
+                else
+                    throw new FormatException("More than two channels audio not supported");
+        }
+
+        /*
+    /// <summary>
+    ///     Creates instances of FileInputNode, FrameOutputNode, AudioData
+    ///     starts AudioGraph, waits till loading of samples is finished
+    /// </summary>
+    /// <param name="file"> Input audio file</param>
+    /// <param name="status"></param>
+    public async Task<CreateAudioFileInputNodeResult>
+        LoadAudioFromFile(
+            StorageFile file,
+            IProgress<string> status)
+    {
+        _finished = false;
+        status.Report("Reading audio file");
+
+        // Initialize FileInputNode
+        var inputNodeCreationResult =
+            await _audioGraph.CreateFileInputNodeAsync(file);
+
+        if (inputNodeCreationResult.Status != AudioFileNodeCreationStatus.Success)
+            return inputNodeCreationResult;
+
+        _fileInputNode = inputNodeCreationResult.FileInputNode;
+
+
+        // Read audio file encoding properties to pass them 
+        //to FrameOutputNode creator
+
+        var audioEncodingProperties =
+            _fileInputNode.EncodingProperties;
+
+        // Initialize FrameOutputNode and connect it to fileInputNode
+        _frameOutputNode = _audioGraph.CreateFrameOutputNode(
+            audioEncodingProperties
+        );
+        _frameOutputNode.Stop();
+        _fileInputNode.AddOutgoingConnection(_frameOutputNode);
+
+        // Add a handler for achiving the end of a file
+        _fileInputNode.FileCompleted += FileInput_FileCompleted;
+        // Add a handler which will transfer every audio frame into audioData 
+        _audioGraph.QuantumStarted += FileInput_QuantumStarted;
+
+        // Initialize audioData
+        var numOfSamples = (int) Math.Ceiling(
+            (decimal) 0.0000001
+            * _fileInputNode.Duration.Ticks
+            * _fileInputNode.EncodingProperties.SampleRate
+        );
+        if (audioEncodingProperties.ChannelCount == 1)
+            SetAudioData(new AudioDataMono(new float[numOfSamples]));
+        else
+            SetAudioData(new AudioDataStereo(new float[numOfSamples],
+                new float[numOfSamples]));
+
+        _audioDataCurrentPosition = 0;
+
+        // Start process which will read audio file frame by frame
+        // and will generated events QuantumStarted when a frame is in memory
+        _audioGraph.Start();
+
+        // didn't find a better way to wait for data
+        while (!_finished)
+            await Task.Delay(50);
+
+        // crear status line
+        status.Report("");
+
+        return inputNodeCreationResult;
+    } */
+
+        /*
+    /// <summary>
+    ///     Starts when reading of samples from input audio file finished
+    /// </summary>
+    private void FileInput_FileCompleted(AudioFileInputNode sender, object args)
+    {
+        _audioGraph.Stop();
+        _frameOutputNode?.Stop();
+        _audioGraph.Dispose();
+        _audioGraph = null;
+        _finished = true;
+        _ioProgress?.Report(0);
+    }
+    */
         /*
         /// <summary>
         ///     Starts every time when audio frame is read from a file
