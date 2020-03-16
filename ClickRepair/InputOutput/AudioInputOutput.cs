@@ -13,6 +13,7 @@ using Windows.Media.Render;
 using Windows.Storage; */
 using GPUDeclickerUWP.Model.Data;
 using NAudio.Wave;
+using NLayer.NAudioSupport;
 
 namespace GPUDeclickerUWP.Model.InputOutput
 {
@@ -158,7 +159,9 @@ namespace GPUDeclickerUWP.Model.InputOutput
             if (url.ToString().EndsWith("wav", true, CultureInfo.InvariantCulture))
                 return new WaveFileReader(memoryStream);
             else if (url.ToString().EndsWith("mp3", true, CultureInfo.InvariantCulture))
-                return new Mp3FileReader(memoryStream);
+                return new Mp3FileReader(
+                    memoryStream, 
+                    new Mp3FileReader.FrameDecompressorBuilder(wf => new Mp3FrameDecompressor(wf)));
             else
                 throw new FormatException("This audio file not supported");
         }

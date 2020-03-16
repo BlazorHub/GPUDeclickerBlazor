@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -10,6 +10,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NAudio" Version="1.10.0" />
+    <PackageReference Include="NLayer" Version="1.13.0" />
+    <PackageReference Include="NLayer.NAudioSupport" Version="1.1.0" />
   </ItemGroup>
 
 </Project>
