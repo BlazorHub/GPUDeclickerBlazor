@@ -152,6 +152,7 @@ namespace GPUDeclickerUWP.Model.InputOutput
             return memoryStream;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         private static WaveStream GetReader(Uri url, MemoryStream memoryStream)
         {
             if (url.ToString().EndsWith("wav", true, CultureInfo.InvariantCulture))
@@ -162,6 +163,7 @@ namespace GPUDeclickerUWP.Model.InputOutput
                 throw new FormatException("This audio file not supported");
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         private static void GetSamples(ISampleProvider sampleProvider, ref List<float> samplesLeft, ref List<float> samplesRight)
         {
             if (sampleProvider is null)
