@@ -109,6 +109,9 @@
 
     private async void ScanAsync()
     {
+        if (AppState.AudioData is null)
+            return;
+
         _inProcess = true;
 
         // scan and repair
