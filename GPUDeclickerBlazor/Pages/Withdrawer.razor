@@ -1,0 +1,69 @@
+﻿@page "/download"
+
+@inject Data.AppState  AppState
+@inject NavigationManager NavigationManager
+
+@using GPUDeclickerUWP.Model.InputOutput;
+@using System.ComponentModel.DataAnnotations;
+
+<h3>Download</h3>
+
+<div class="card mb-2">
+    <h4 class="card-title">Download processed audio file on your computer</h4>
+    <div class="card-text">
+        <EditForm Model="@_viewerModel" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <InputText @bind-Value="_viewerModel.FileName" />
+
+            <button type="submit" class="btn btn-primary">Download</button>
+
+        </EditForm>
+    </div>
+</div>
+
+<h4>@_status</h4>
+
+@code {
+
+    private bool _testMode = false;
+
+    private string _status;
+
+    private class ViewerModel
+    {
+        [Required]
+        [FileName]
+        public string FileName { get; set; }
+    }
+
+    private class FileName : ValidationAttribute
+    {
+        protected override ValidationResult IsValid(object value,
+            ValidationContext validationContext)
+        {
+            if (value is String fileName)
+                if (!String.IsNullOrEmpty(fileName) 
+                    && !@"\/:*?""<>|".Any(ch => fileName.Contains(ch)))
+                    return ValidationResult.Success;
+
+            return new ValidationResult("Not a valid file name");
+        }
+    }
+
+    private ViewerModel _viewerModel = new ViewerModel();
+    private AudioInputOutput _audioIO = new AudioInputOutput();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _status = AppState.AudioData is null ? "Please load audio" : "Audio is loaded";
+    }
+
+    private void HandleValidSubmit()
+    {
+        NavigationManager.NavigateTo("/api/download/" + _viewerModel.FileName, true);
+    }
+}

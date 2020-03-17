@@ -1,12 +1,11 @@
-﻿@page "/load"
+﻿@page "/upload"
 
 @inject Data.AppState  AppState
 
 @using GPUDeclickerUWP.Model.InputOutput;
-
 @using System.ComponentModel.DataAnnotations;
 
-<h3>Loader</h3>
+<h3>Upload</h3>
 
 <div class="card mb-2">
     <h4 class="card-title">Load audio file using URL (link)</h4>
@@ -17,12 +16,12 @@
 
             <InputText id="uri" @bind-Value="_viewerModel.Uri" />
 
-            <button type="submit" class="btn btn-primary">Load</button>
+            <button type="submit" class="btn btn-primary">Upload</button>
 
             @if (_testMode)
             {
                 <!--Test buttons-->
-        <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet_short_short.wav"; })">Shortest WAV File</button>
+                <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet_short_short.wav"; })">Shortest WAV File</button>
                 <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet_short.wav"; })">Short WAV File</button>
                 <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet.wav"; })">Full WAV File</button>
                 <button type="submit" class="btn btn-secondary" @onclick="@(_ => { _viewerModel.Uri = "https://programmerincanada.com/wp-content/uploads/2020/03/feet_short_stereo.wav"; })">Short (stereo) WAV File</button>
