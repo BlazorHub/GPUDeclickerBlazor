@@ -20,6 +20,39 @@ namespace GPUDeclickerUWP.Model.InputOutput
             return _audioData;
         }
 
+        public (bool success, MemoryStream stream) SaveAudioToStream()
+        {
+            if (_audioData is null)
+                return (false, null);
+
+            var bufferSamples = GetAllSamples();
+                
+            var memoryStream = new MemoryStream();
+            using (var writer = new WaveFileWriter(memoryStream, new WaveFormat(44100, _audioData.IsStereo ? 2 : 1)))
+                writer.WriteSamples(bufferSamples, 0, bufferSamples.Length);
+
+            return (true, memoryStream);
+        }
+
+        private float[] GetAllSamples()
+        {
+            var channelsNumber = _audioData.IsStereo ? 2 : 1;
+            var bufferSamples = new float[_audioData.LengthSamples() * channelsNumber];
+
+            for (var index = 0; index < _audioData.LengthSamples(); index++)
+            {
+                _audioData.SetCurrentChannelType(ChannelType.Left);
+                bufferSamples[index * channelsNumber] = _audioData.GetOutputSample(index);
+                if (_audioData.IsStereo)
+                {
+                    _audioData.SetCurrentChannelType(ChannelType.Right);
+                    bufferSamples[index * channelsNumber + 1] = _audioData.GetOutputSample(index);
+                }
+            }
+
+            return bufferSamples;
+        }
+
         public void SetAudioData(AudioData value)
         {
             _audioData = value;
