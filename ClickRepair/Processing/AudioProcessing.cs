@@ -263,7 +263,7 @@ namespace GPUDeclickerUWP.Model.Processing
             IProgress<double> progress,
             int cpuCore)
         {
-            var lastProcessedSample = 0;
+            var lastProcessedSample = segmentStart;
 
             // cycle to check every sample
             for (var index = segmentStart; index < segmentEnd; index++)
