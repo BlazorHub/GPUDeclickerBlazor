@@ -11,11 +11,11 @@
 <div class="card mb-2">
     <h4 class="card-title">Download processed audio file on your computer</h4>
     <div class="card-text">
-        <EditForm Model="@_viewerModel" OnValidSubmit="HandleValidSubmit">
+        <EditForm Model="@_withdrawerModel" OnValidSubmit="HandleValidSubmit">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
-            <InputText @bind-Value="_viewerModel.FileName" />
+            <InputText @bind-Value="_withdrawerModel.FileName" />
 
             <button type="submit" class="btn btn-primary">Download</button>
 
@@ -31,7 +31,7 @@
 
     private string _status;
 
-    private class ViewerModel
+    private class WithdrawerModel
     {
         [Required]
         [FileName]
@@ -44,7 +44,7 @@
             ValidationContext validationContext)
         {
             if (value is String fileName)
-                if (!String.IsNullOrEmpty(fileName) 
+                if (!String.IsNullOrEmpty(fileName)
                     && !@"\/:*?""<>|".Any(ch => fileName.Contains(ch)))
                     return ValidationResult.Success;
 
@@ -52,18 +52,19 @@
         }
     }
 
-    private ViewerModel _viewerModel = new ViewerModel();
+    private WithdrawerModel _withdrawerModel = new WithdrawerModel();
     private AudioInputOutput _audioIO = new AudioInputOutput();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
+        _withdrawerModel.FileName = AppState.OutputFileNameSuggestion;
         _status = AppState.AudioData is null ? "Please load audio" : "Audio is loaded";
     }
 
     private void HandleValidSubmit()
     {
-        NavigationManager.NavigateTo("/api/download/" + _viewerModel.FileName, true);
+        NavigationManager.NavigateTo("/api/download/" + _withdrawerModel.FileName, true);
     }
 }

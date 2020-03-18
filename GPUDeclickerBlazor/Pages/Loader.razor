@@ -4,6 +4,7 @@
 
 @using GPUDeclickerUWP.Model.InputOutput;
 @using System.ComponentModel.DataAnnotations;
+@using System.IO;
 
 <h3>Upload</h3>
 
@@ -72,11 +73,14 @@
     private async Task HandleValidSubmit()
     {
         _status = "Loading...";
-        var result = await _audioIO.LoadAudioFromHttpAsync(new Uri(_viewerModel.Uri));
+        var uri = new Uri(_viewerModel.Uri);
+        var result = await _audioIO.LoadAudioFromHttpAsync(uri);
         if (result.success)
         {
             AppState.SetAudioData(_audioIO.GetAudioData());
             _status = "Length (in samples) : " + GetLength();
+            AppState.OutputFileNameSuggestion =
+                Path.GetFileNameWithoutExtension(uri.LocalPath);
         }
         else
             _status = "Can not load this one: " + result.error;
@@ -101,6 +105,8 @@
         {
             AppState.SetAudioData(_audioIO.GetAudioData());
             _status = "Length (in samples) : " + GetLength();
+            AppState.OutputFileNameSuggestion = 
+                Path.GetFileNameWithoutExtension(file.Name);
         }
         else
             _status = "Can not load this one: " + result.error;

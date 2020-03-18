@@ -9,6 +9,8 @@ namespace GPUDeclickerBlazor.Data
         const float _defaultThreshold = 10f;
         const int _defaultMaxLength = 250;
 
+        public string OutputFileNameSuggestion { get; set; } = String.Empty;
+
         // Audio processing parameters
         public float Threshold
         {
