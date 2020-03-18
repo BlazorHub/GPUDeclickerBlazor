@@ -7,6 +7,8 @@
 
 <h3>Scan</h3>
 
+<WaveForm ChangeToUpdate="@_changeToUpdateWaveForm" Width="2000" Height="100" />
+
 <StatusReport Status="@_taskStatus" Progress="@_taskProgress" />
 
 <SettingsAdjust />
@@ -73,7 +75,7 @@
 }
 
 @code {
-    
+
     private Progress<double> _progress;
     private Progress<string> _status;
     private double _taskProgress;
@@ -82,6 +84,8 @@
     private bool _inProcess = false;
 
     private int _colNumber = 4;
+
+    private bool _changeToUpdateWaveForm;
 
     // Click Editor parameters
     private AudioClick _clickForEditing;
@@ -115,12 +119,15 @@
         _inProcess = true;
 
         // scan and repair
-        await Task.Run(() => AudioProcessing.ProcessAudioAsync(
+        await AudioProcessing.ProcessAudioAsync(
             AppState.AudioData,
             _progress,
-            _status));
+            _status);
 
         _inProcess = false;
+
+        _changeToUpdateWaveForm = !_changeToUpdateWaveForm;
+
         StateHasChanged();
     }
 }

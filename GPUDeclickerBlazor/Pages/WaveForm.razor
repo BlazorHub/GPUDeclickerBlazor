@@ -1,0 +1,204 @@
+﻿@inject Data.AppState  AppState
+
+@using System.Drawing
+@using GPUDeclickerUWP.Model.Data
+
+<div class="pb-2">
+    @if (AppState.AudioData is null)
+    {
+        <img class="mh-100 mw-100" src="data:image/gif;base64,@_imageEmptyBase64" />
+    }
+    else
+    {
+        if (AppState.AudioData.IsStereo)
+        {
+            <img class="mh-100 mw-100" src="data:image/gif;base64,@_imageLeftBase64" />
+            <img class="mh-100 mw-100" src="data:image/gif;base64,@_imageRightBase64" />
+        }
+        else
+        {
+            <img class="mh-100 mw-100" src="data:image/gif;base64,@_imageLeftBase64" />
+        }
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public int Width { get; set; }
+    [Parameter]
+    public int Height { get; set; }
+    [Parameter]
+    public bool ChangeToUpdate { get; set; }
+
+    private string _imageLeftBase64;
+    private string _imageRightBase64;
+
+    private string _imageEmptyBase64;
+
+    private Color _borderColor = Color.FromName("Blue");
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        DrawWaveForm();
+    }
+
+    public void DrawWaveForm()
+    {
+        if (AppState.AudioData is null)
+        {
+            DrawEmpty();
+            return;
+        }
+
+        if (AppState.AudioData.IsStereo)
+        {
+            _imageLeftBase64 = DrawChannel(ChannelType.Left);
+            _imageRightBase64 = DrawChannel(ChannelType.Right);
+        }
+        else
+            _imageLeftBase64 = DrawChannel(ChannelType.Left);
+    }
+
+    private void DrawEmpty()
+    {
+        var image = new Bitmap(Width, Height);
+
+        var graphics = Graphics.FromImage(image);
+        graphics.Clear(Color.White);
+
+        StringFormat format = new StringFormat();
+        format.LineAlignment = StringAlignment.Center;
+        format.Alignment = StringAlignment.Center;
+        graphics.DrawString(
+            "Empty",
+            new Font(FontFamily.GenericSansSerif, Height / 3, FontStyle.Regular),
+            Brushes.Gray,
+            new RectangleF(0, 0, Width, Height),
+            format);
+
+        DrawBorder(graphics);
+
+        var ms = new System.IO.MemoryStream();
+        image.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
+        _imageEmptyBase64 = Convert.ToBase64String(ms.ToArray());
+
+        graphics.Dispose();
+    }
+
+    private string DrawChannel(ChannelType channel)
+    {
+        var input = GetPolyline(channel);
+
+        var image = new Bitmap(Width, Height);
+
+        var graphics = Graphics.FromImage(image);
+        graphics.Clear(Color.White);
+
+        DrawPolyline(graphics, input, Color.Black, Color.Red);
+
+        DrawBorder(graphics);
+
+        var ms = new System.IO.MemoryStream();
+        image.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
+        var imageStringBase64 = Convert.ToBase64String(ms.ToArray());
+
+        graphics.Dispose();
+
+        return imageStringBase64;
+    }
+
+    private void DrawPolyline(Graphics graphics, (PointF coord, bool repaired)[] polyline, Color mainColor, Color repairedColor)
+    {
+        var previousPoint = polyline[0];
+
+        foreach (var point in polyline)
+        {
+            var color = point.repaired || previousPoint.repaired ? repairedColor : mainColor;
+            graphics.DrawLine(new Pen(color, 1), previousPoint.coord, point.coord);
+            previousPoint = point;
+        }
+    }
+
+    private void DrawBorder(Graphics graphics)
+    {
+        graphics.DrawRectangle(new Pen(_borderColor, 3), 0, 0, Width, Height);
+    }
+
+    /// <summary>
+    ///     Forms polylines that show input audio samples
+    /// </summary>
+    private (PointF point, bool repaired)[] GetPolyline(ChannelType channel)
+    {
+        var input = new List<(PointF, bool)>();
+        var audioDataToWaveFormRatio =
+                AppState.AudioData.LengthSamples() / Width;
+        var clicks = AppState.GetAudioClicks(channel);
+
+        for (var x = 0; x < Width; x++)
+            input.AddRange(PointsToWaveform(x, audioDataToWaveFormRatio, clicks));
+
+        return input.ToArray();
+    }
+
+    /// <summary>
+    ///     Adds a point representing one or many samples to wave form
+    /// </summary>
+    private (PointF point, bool repaired)[] PointsToWaveform(
+        int x,
+        float audioDataToWaveFormRatio,
+        AudioClick[] clicks)
+    {
+        var points = new (PointF, bool)[2];
+
+        var start = (int)(x * audioDataToWaveFormRatio);
+        var length = (int)audioDataToWaveFormRatio;
+
+        var offsetY = Height / 2;
+
+        FindMinMax(start, length, out var min, out var max);
+
+        var repaired = clicks.Any(c => c.Position <= start + length
+                            && c.Position + c.Length >= start);
+
+        // connect previous point to a new point
+        var y = (int)(-0.5 * Height * max) + offsetY;
+        points[0] = (new Point(x, y), repaired);
+
+        // form vertical line connecting max and min
+        y = (int)(-0.5 * Height * min) + offsetY;
+        points[1] = (new Point(x, y), repaired);
+
+        return points;
+    }
+
+    /// <summary>
+    ///     Looks for max and min values among many samples represented
+    ///     by a point on wave form
+    /// </summary>
+    /// <param name="begining">first sample position</param>
+    /// <param name="length">number of samples</param>
+    /// <param name="minValue">min value</param>
+    /// <param name="maxValue">max value</param>
+    private void FindMinMax(
+        int begining,
+        int length,
+        out float minValue,
+        out float maxValue)
+    {
+        minValue = AppState.AudioData.GetInputSample(begining);
+        maxValue = AppState.AudioData.GetInputSample(begining);
+
+        for (var index = 0;
+            index < length && begining + index < AppState.AudioData.LengthSamples();
+            index++)
+        {
+            if (AppState.AudioData.GetInputSample(begining + index) < minValue)
+                minValue = AppState.AudioData.GetInputSample(begining + index);
+            if (AppState.AudioData.GetInputSample(begining + index) > maxValue)
+                maxValue = AppState.AudioData.GetInputSample(begining + index);
+        }
+    }
+}
