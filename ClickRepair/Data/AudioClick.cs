@@ -142,11 +142,13 @@ namespace GPUDeclickerUWP.Model.Data
 
         public float GetInputSample(int position)
         {
+            _audioDataOwningThisClick.SetCurrentChannelType(this.FromChannel);
             return _audioDataOwningThisClick.GetInputSample(position);
         }
 
         public float GetOutputSample(int position)
         {
+            _audioDataOwningThisClick.SetCurrentChannelType(this.FromChannel);
             return _audioDataOwningThisClick.GetOutputSample(position);
         }
 
