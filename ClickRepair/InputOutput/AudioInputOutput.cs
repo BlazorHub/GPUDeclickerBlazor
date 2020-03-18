@@ -26,10 +26,14 @@ namespace GPUDeclickerUWP.Model.InputOutput
                 return (false, null);
 
             var bufferSamples = GetAllSamples();
-                
+            var outputSampleRate = _audioData.AudioProcessingSettings.SampleRate;
+
             var memoryStream = new MemoryStream();
-            using (var writer = new WaveFileWriter(memoryStream, new WaveFormat(44100, _audioData.IsStereo ? 2 : 1)))
-                writer.WriteSamples(bufferSamples, 0, bufferSamples.Length);
+            using (var writer = new WaveFileWriter(
+                memoryStream, 
+                new WaveFormat(outputSampleRate, 
+                _audioData.IsStereo ? 2 : 1)))
+                    writer.WriteSamples(bufferSamples, 0, bufferSamples.Length);
 
             return (true, memoryStream);
         }
@@ -75,6 +79,7 @@ namespace GPUDeclickerUWP.Model.InputOutput
 
             List<float> samplesLeft = new List<float>();
             List<float> samplesRight = new List<float>();
+            var inputSampleRate = -1;
             var error = String.Empty;
             bool success;
 
@@ -82,9 +87,12 @@ namespace GPUDeclickerUWP.Model.InputOutput
             {
                 using (var memoryStream = await GetContentFromStreamAsync(stream)
                     .ConfigureAwait(false))
-                    // Convert content to samples
-                    using (var reader = GetReader(name, memoryStream))
-                        GetSamples(reader.ToSampleProvider(), ref samplesLeft, ref samplesRight);
+                // Convert content to samples
+                using (var reader = GetReader(name, memoryStream))
+                {
+                    GetSamples(reader.ToSampleProvider(), ref samplesLeft, ref samplesRight);
+                    inputSampleRate = reader.WaveFormat.SampleRate;
+                }
                 
                 error = "OK";
             }
@@ -97,11 +105,13 @@ namespace GPUDeclickerUWP.Model.InputOutput
                 if (samplesRight.Any())
                 {
                     SetAudioData(new AudioDataStereo(samplesLeft.ToArray(), samplesRight.ToArray()));
+                    _audioData.AudioProcessingSettings.SampleRate = inputSampleRate;
                     success = true;
                 }
                 else if (samplesLeft.Any())
                 {
                     SetAudioData(new AudioDataMono(samplesLeft.ToArray()));
+                    _audioData.AudioProcessingSettings.SampleRate = inputSampleRate;
                     success = true;
                 }
                 else
