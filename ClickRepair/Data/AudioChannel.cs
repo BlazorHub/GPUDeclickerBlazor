@@ -24,70 +24,40 @@ namespace GPUDeclickerUWP.Model.Data
 
         public bool ChannelIsPreprocessed { get; set; }
 
-        public int LengthSamples()
-        {
-            return _input.Length;
-        }
+        public int LengthSamples() => _input.Length;
 
-        public float GetInputSample(int position)
-        {
-            return _input[position];
-        }
+        public float GetInputSample(int position) => _input[position];
 
-        public void SetInputSample(int position, float value)
-        {
+        public void SetInputSample(int position, float value) => 
             _input[position] = value;
-        }
 
-        public float GetOutputSample(int position)
-        {
-            return _output[position];
-        }
+        public float GetOutputSample(int position) => _output[position];
 
-        public void SetOutputSample(int position, float value)
-        {
+        public void SetOutputSample(int position, float value) => 
             _output[position] = value;
-        }
 
-        public float GetPredictionErr(int position)
-        {
-            return _predictionErr[position];
-        }
+        public float GetPredictionErr(int position) => 
+            _predictionErr[position];
 
-        public void SetPredictionErr(int position, float value)
-        {
+        public void SetPredictionErr(int position, float value) => 
             _predictionErr[position] = value;
-        }
 
-        public float GetPredictionErrBackup(int position)
-        {
-            return _predictionErrBackup[position];
-        }
+        public float GetPredictionErrBackup(int position) => 
+            _predictionErrBackup[position];
 
-        public void SetPredictionErrBackup(int position, float value)
-        {
+        public void SetPredictionErrBackup(int position, float value) => 
             _predictionErrBackup[position] = value;
-        }
 
-        public float GetPredictionErrAverage(int position)
-        {
-            return _predictionErrAverage[position];
-        }
+        public float GetPredictionErrAverage(int position) => 
+            _predictionErrAverage[position];
 
-        public void SetPredictionErrAverage(int position, float value)
-        {
+        public void SetPredictionErrAverage(int position, float value) => 
             _predictionErrAverage[position] = value;
-        }
 
-        public void AddClickToList(AudioClick audioClick) 
-        {
+        public void AddClickToList(AudioClick audioClick) => 
             _clicksList.Add(audioClick);
-        }
 
-        public int GetNumberOfClicks()
-        {
-            return _clicksList.Count;
-        }
+        public int GetNumberOfClicks() => _clicksList.Count;
 
         internal void RestoreInitState(int position, int lenght)
         {
@@ -98,19 +68,10 @@ namespace GPUDeclickerUWP.Model.Data
             }
         }
 
-        public AudioClick GetClick(int index)
-        {
-            return _clicksList[index];
-        }
+        public AudioClick GetClick(int index) => _clicksList[index];
 
-        internal void ClearAllClicks()
-        {
-            _clicksList.Clear();
-        }
+        internal void ClearAllClicks() => _clicksList.Clear();
 
-        internal void SortClicks()
-        {
-            _clicksList.Sort();
-        }
+        internal void SortClicks() => _clicksList.Sort();
     }
 }
