@@ -22,7 +22,7 @@ jobs:
       run: |
         git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/DmitriiKh/GPUDeclickerBlazor target
         cd target
-        cp ClickRepair ../temp
+        cp -r ClickRepair ../temp
         git checkout gh-pages
         rm -r *
         cp -r ../temp/* .
