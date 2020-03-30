@@ -27,27 +27,27 @@ jobs:
     - name: Make a copy1
       run: 
         cd target
-    - name: Make a copy2
-      run: 
-        ls
-    - name: Make a copy1
-      run: 
-        cd target
-    - name: Make a copy2
-      run: 
-        ls
-    - name: Make a copy2
-      run: 
-        cp -r ClickRepair ../temp
+    #- name: Make a copy2
+    #  run: 
+    #    ls
+    #- name: Make a copy1
+    #  run: 
+    #    cd target
+    #- name: Make a copy2
+    #  run: 
+    #    ls
+    #- name: Make a copy2
+    #  run: 
+    #    cp -r ClickRepair ../temp
     - name: Make a copy
       run: 
         git checkout gh-pages
     - name: Make a copy
       run:
         rm -r *
-    - name: Make a copy
-      run: 
-        cp -r ../temp/* .
+    #- name: Make a copy
+    #  run: 
+    #    cp -r ../temp/* .
     - name: Make a copy
       run:
         echo "git add"
