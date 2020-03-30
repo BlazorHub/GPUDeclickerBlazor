@@ -18,50 +18,22 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
         
-    - name: Make a copy
-      run: 
-        git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/DmitriiKh/GPUDeclickerBlazor target
-    - name: Make a copy2
-      run: 
+    - uses: actions/checkout@master
+    - name: Create local changes
+      run: |
         ls -d $PWD/*
-      working-directory: target
-    - name: Make a copy1
-      run: 
-        cd ./target
-    - name: Make a copy2
-      run: 
-        ls -d $PWD/*
-    #- name: Make a copy1
-    #  run: 
-    #    cd target
-    #- name: Make a copy2
-    #  run: 
-    #    ls
-    - name: Make a copy2
-      run: 
         cp -r ClickRepair ../temp
-      working-directory: target
-    - name: Make a copy
-      run: 
         git checkout gh-pages
-      working-directory: target
-    - name: Make a copy
-      run:
         rm -r *
-      working-directory: target
-    - name: Make a copy
-      run: 
         cp -r ../temp/* .
+        ls -d $PWD/*
       working-directory: target
-    - name: Make a copy
-      run:
-        git add .
-      working-directory: target
-    - name: Make a copy
-      run:
-        git commit -m "Automatic publish from github.com/prject"
-      working-directory: target
-    - name: Make a copy
-      run:
-        git push gh-pages
-      working-directory: target
+    - name: Commit files
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m "Add changes" -a
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
