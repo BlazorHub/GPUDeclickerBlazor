@@ -24,6 +24,7 @@ jobs:
     - name: Make a copy2
       run: 
         ls -d $PWD/*
+      working-directory: target
     - name: Make a copy1
       run: 
         cd ./target
