@@ -22,6 +22,10 @@ jobs:
     - name: Create local changes
       run: |
         ls -d $PWD/*
+      
+    - name: Create local changes
+      run: |
+        ls -d $PWD/*
         cp -r ClickRepair ../temp
         git checkout gh-pages
         rm -r *
