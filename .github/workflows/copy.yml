@@ -23,13 +23,13 @@ jobs:
         git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/DmitriiKh/GPUDeclickerBlazor
     - name: Make a copy2
       run: 
-        ls
+        ls -d $PWD/*
     - name: Make a copy1
       run: 
         cd GPUDeclickerBlazor
     - name: Make a copy2
       run: 
-        ls
+        ls -d $PWD/*
     #- name: Make a copy1
     #  run: 
     #    cd target
