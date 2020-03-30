@@ -26,7 +26,13 @@ jobs:
         ls
     - name: Make a copy1
       run: 
-        cd target/target
+        cd target
+    - name: Make a copy2
+      run: 
+        ls
+    - name: Make a copy1
+      run: 
+        cd target
     - name: Make a copy2
       run: 
         ls
