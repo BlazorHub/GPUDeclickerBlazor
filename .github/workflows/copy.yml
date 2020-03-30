@@ -21,9 +21,12 @@ jobs:
     - name: Make a copy
       run: 
         git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/DmitriiKh/GPUDeclickerBlazor target
+    - name: Make a copy2
+      run: 
+        ls
     - name: Make a copy1
       run: 
-        cd target
+        cd target/target
     - name: Make a copy2
       run: 
         ls
