@@ -18,11 +18,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
         
-    - uses: actions/checkout@master
-    - name: Create local changes
-      run: |
-        ls -d $PWD/*
-      
+    - uses: actions/checkout@master 
     - name: Create local changes
       run: |
         ls -d $PWD/*
@@ -31,7 +27,6 @@ jobs:
         rm -r *
         cp -r ../temp/* .
         ls -d $PWD/*
-      working-directory: target
     - name: Commit files
       run: |
         git config --local user.email "action@github.com"
