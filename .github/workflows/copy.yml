@@ -20,7 +20,7 @@ jobs:
         
     - name: Make a copy
       run: 
-        git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/DmitriiKh/GPUDeclickerBlazor target
+        git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/DmitriiKh/GPUDeclickerBlazor
     - name: Make a copy2
       run: 
         ls
