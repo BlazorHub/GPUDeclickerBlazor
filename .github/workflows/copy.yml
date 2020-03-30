@@ -20,7 +20,7 @@ jobs:
         cp -r ClickRepair ../temp
         git fetch
         git checkout gh-pages
-        rm -r ./*
+        rm -rf *
         cp -r ../temp/* .
         ls -d $PWD/*
     - name: Commit files
