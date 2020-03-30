@@ -26,6 +26,9 @@ jobs:
         cd target
     - name: Make a copy2
       run: 
+        ls
+    - name: Make a copy2
+      run: 
         cp -r ClickRepair ../temp
     - name: Make a copy
       run: 
