@@ -15,10 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ClickRepair\ClickRepair.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BlazorInputFile" Version="0.1.0-preview" />
   </ItemGroup>
 
