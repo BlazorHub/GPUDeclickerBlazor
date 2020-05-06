@@ -1,16 +1,16 @@
 ﻿@inject Data.AppState  AppState
 
 @using System.Drawing
-@using GPUDeclickerUWP.Model.Data
+@using AudioClickRepair.Data
 
 <div class="pb-2">
-    @if (AppState.AudioData is null)
+    @if (AppState.Audio is null)
     {
         <img class="mh-100 mw-100" src="data:image/gif;base64,@_imageEmptyBase64" />
     }
     else
     {
-        if (AppState.AudioData.IsStereo)
+        if (AppState.Audio.IsStereo)
         {
             <img class="mh-100 mw-100" src="data:image/gif;base64,@_imageLeftBase64" />
             <img class="mh-100 mw-100" src="data:image/gif;base64,@_imageRightBase64" />
@@ -47,13 +47,13 @@
 
     public void DrawWaveForm()
     {
-        if (AppState.AudioData is null)
+        if (AppState.Audio is null)
         {
             DrawEmpty();
             return;
         }
 
-        if (AppState.AudioData.IsStereo)
+        if (AppState.Audio.IsStereo)
         {
             _imageLeftBase64 = DrawChannel(ChannelType.Left);
             _imageRightBase64 = DrawChannel(ChannelType.Right);
@@ -134,7 +134,7 @@
     {
         var input = new List<(PointF, bool)>();
         var audioDataToWaveFormRatio =
-                AppState.AudioData.LengthSamples() / Width;
+                AppState.Audio.LengthSamples / Width;
         var clicks = AppState.GetAudioClicks(channel);
 
         for (var x = 0; x < Width; x++)
@@ -149,7 +149,7 @@
     private (PointF point, bool repaired)[] PointsToWaveform(
         int x,
         float audioDataToWaveFormRatio,
-        AudioClick[] clicks)
+        Patch[] clicks)
     {
         var points = new (PointF, bool)[2];
 
@@ -160,8 +160,8 @@
 
         FindMinMax(start, length, out var min, out var max);
 
-        var repaired = clicks.Any(c => c.Position <= start + length
-                            && c.Position + c.Length >= start);
+        var repaired = clicks.Any(c => c.StartPosition <= start + length
+                            && c.StartPosition + c.Length >= start);
 
         // connect previous point to a new point
         var y = (int)(-0.5 * Height * max) + offsetY;
@@ -188,17 +188,17 @@
         out float minValue,
         out float maxValue)
     {
-        minValue = AppState.AudioData.GetInputSample(begining);
-        maxValue = AppState.AudioData.GetInputSample(begining);
+        minValue = AppState.Audio.GetInputSample(begining);
+        maxValue = AppState.Audio.GetInputSample(begining);
 
         for (var index = 0;
-            index < length && begining + index < AppState.AudioData.LengthSamples();
+            index < length && begining + index < AppState.Audio.LengthSamples;
             index++)
         {
-            if (AppState.AudioData.GetInputSample(begining + index) < minValue)
-                minValue = AppState.AudioData.GetInputSample(begining + index);
-            if (AppState.AudioData.GetInputSample(begining + index) > maxValue)
-                maxValue = AppState.AudioData.GetInputSample(begining + index);
+            if (AppState.Audio.GetInputSample(begining + index) < minValue)
+                minValue = AppState.Audio.GetInputSample(begining + index);
+            if (AppState.Audio.GetInputSample(begining + index) > maxValue)
+                maxValue = AppState.Audio.GetInputSample(begining + index);
         }
     }
 }

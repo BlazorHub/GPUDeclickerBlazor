@@ -2,8 +2,7 @@
 
 @inject Data.AppState  AppState
 
-@using GPUDeclickerUWP.Model.Processing;
-@using GPUDeclickerUWP.Model.Data;
+@using AudioClickRepair.Data;
 
 <h3>Scan</h3>
 
@@ -30,7 +29,7 @@
 
 <!--Clicks collection-->
 <div style="clear:both">
-    @if (AppState.AudioData != null)
+    @if (AppState.Audio != null)
     {
         if (_inProcess)
         {
@@ -38,9 +37,9 @@
         }
         else
         {
-            if (AppState.AudioData.CurrentChannelIsPreprocessed())
+            if (AppState.Audio.CurrentChannelIsPreprocessed())
             {
-                if (AppState.AudioData.IsStereo)
+                if (AppState.Audio.IsStereo)
                 {
                 <ClickCollectionWindow ClickArray="@AppState.GetAudioClicks(ChannelType.Left)" Title="Left channel" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
                 <ClickCollectionWindow ClickArray="@AppState.GetAudioClicks(ChannelType.Right)" Title="Right channel" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
@@ -67,7 +66,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <ClickEditor Click="@_clickForEditing" />
+                    <ClickEditor Click="@_patchForEditing" />
                 </div>
             </div>
         </div>
@@ -88,7 +87,7 @@
     private bool _changeToUpdateWaveForm;
 
     // Click Editor parameters
-    private AudioClick _clickForEditing;
+    private Patch _patchForEditing;
     private bool _editMode = false;
 
     protected override void OnInitialized()
@@ -99,30 +98,31 @@
 
     private string ScanOrRescan()
     {
-        if (AppState.AudioData is null || !AppState.AudioData.CurrentChannelIsPreprocessed())
+        if (AppState.Audio is null || !AppState.Audio.CurrentChannelIsPreprocessed())
             return "Scan";
         else
             return "Rescan";
     }
 
-    private void EditClick(AudioClick clickForEditing)
+    private void EditClick(Patch patchForEditing)
     {
-        _clickForEditing = clickForEditing;
+        _patchForEditing = patchForEditing;
         _editMode = true;
     }
 
     private async void ScanAsync()
     {
-        if (AppState.AudioData is null)
+        if (AppState.Audio is null)
             return;
 
         _inProcess = true;
 
         // scan and repair
-        await AudioProcessing.ProcessAudioAsync(
-            AppState.AudioData,
-            _progress,
-            _status);
+        //await AudioProcessing.ProcessAudioAsync(
+        //    AppState.Audio,
+        //    _progress,
+        //    _status);
+        AppState.Audio.Scan();
 
         _inProcess = false;
 

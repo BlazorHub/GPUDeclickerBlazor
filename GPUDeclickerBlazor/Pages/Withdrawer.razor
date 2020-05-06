@@ -3,7 +3,7 @@
 @inject Data.AppState  AppState
 @inject NavigationManager NavigationManager
 
-@using GPUDeclickerUWP.Model.InputOutput;
+@using AudioInputOutput_NAudio;
 @using System.ComponentModel.DataAnnotations;
 
 <h3>Download</h3>
@@ -58,7 +58,7 @@
         base.OnInitialized();
 
         _withdrawerModel.FileName = AppState.OutputFileNameSuggestion;
-        _status = AppState.AudioData is null ? "Please load audio" : "Audio is loaded";
+        _status = AppState.Audio is null ? "Please load audio" : "Audio is loaded";
     }
 
     private void HandleValidSubmit()

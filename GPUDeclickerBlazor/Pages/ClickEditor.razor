@@ -1,4 +1,4 @@
-﻿@using GPUDeclickerUWP.Model.Data
+﻿@using AudioClickRepair.Data
 
 <div class="d-flex">
     <div class="btn-group-vertical float-left" role="group" aria-label="Basic example">
@@ -17,43 +17,43 @@
 </div>
 
 <div class="text-center">
-    <p>Use the controls above to change this click lenght or to exclude (include) it from (into) the output file</p>
-    <ClickWindow @ref="_clickWindow" Click="@Click" Width="300" Height="200" />
+    <p>Use the controls above to change this click length or to exclude (include) it from (into) the output file</p>
+    <ClickWindow @ref="_clickWindow" Click="@AudioPatch" Width="300" Height="200" />
 </div>
 
 @code {
     [Parameter]
-    public AudioClick Click { get; set; }
+    public Patch AudioPatch { get; set; }
 
     private ClickWindow _clickWindow;
 
     private void ChangeAproved(MouseEventArgs e)
     {
-        Click?.ChangeAproved();
+        AudioPatch?.ChangeApproved();
         _clickWindow.Draw();
     }
 
     private void ShrinkLeft(MouseEventArgs e)
     {
-        Click?.ShrinkLeft();
+        AudioPatch?.ShrinkLeft();
         _clickWindow.Draw();
     }
 
     private void ExpandLeft(MouseEventArgs e)
     {
-        Click?.ExpandLeft();
+        AudioPatch?.ExpandLeft();
         _clickWindow.Draw();
     }
 
     private void ExpandRight(MouseEventArgs e)
     {
-        Click?.ExpandRight();
+        AudioPatch?.ExpandRight();
         _clickWindow.Draw();
     }
 
     private void ShrinkRight(MouseEventArgs e)
     {
-        Click?.ShrinkRight();
+        AudioPatch?.ShrinkRight();
         _clickWindow.Draw();
     }
 }

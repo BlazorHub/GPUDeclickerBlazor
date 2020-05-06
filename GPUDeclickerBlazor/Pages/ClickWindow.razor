@@ -1,26 +1,27 @@
 ﻿@using System.Drawing
-@using GPUDeclickerUWP.Model.Data
+@using AudioClickRepair.Data
 
-@if (Click is null)
+@if (AudioPatch is null)
 {
     <h5>Empty</h5>
 }
  else
 {
-    <h5>@Click.Position x @Click.Length</h5>
+    <h5>@AudioPatch.StartPosition x @AudioPatch.Length</h5>
 }
 
 <img class="mh-100 mw-100" src="data:image/gif;base64,@_imageBase64" @onclick="OnImageClick" />
 
 @code {
     [Parameter]
-    public AudioClick Click { get; set; }
+    public Patch AudioPatch
+    { get; set; }
     [Parameter]
     public int Width { get; set; }
     [Parameter]
     public int Height { get; set; }
     [Parameter]
-    public EventCallback<AudioClick> OnEditorCalled { get; set; }
+    public EventCallback<Patch> OnEditorCalled { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -31,7 +32,7 @@
 
     public void Draw()
     {
-        if (Click is null)
+        if (AudioPatch is null)
             DrawEmpty();
         else
             DrawClick();
@@ -102,7 +103,7 @@
 
     private void SetBorderColour()
     {
-        _borderColor = Click.Aproved
+        _borderColor = AudioPatch.Approved
             ? Color.FromName("Aqua")
             : Color.FromName("Yellow");
     }
@@ -118,25 +119,25 @@
         // calculate position in audio track to show click
         //in the center of this CW
         var clickWindowStartPositionInAudio = (int)(
-            Click.Position +
-            Click.Length / 2 -
+            AudioPatch.StartPosition +
+            AudioPatch.Length / 2 -
             Width / 2);
 
         // set Input polylyne
         for (var x = 0; x < Width; x++)
         {
-            var sample = Click.GetInputSample(clickWindowStartPositionInAudio + x);
+            var sample = AudioPatch.GetInputSample(clickWindowStartPositionInAudio + x);
             var y = Height * (-sample + 1) / 2;
             input.Add(new PointF(x, y));
         }
 
         // set Output polyline two samples wider than click
-        var shift = Click.Position - clickWindowStartPositionInAudio;
+        var shift = AudioPatch.StartPosition - clickWindowStartPositionInAudio;
         for (var x = shift - 1;
-            x <= shift + Click.Length + 1;
+            x <= shift + AudioPatch.Length + 1;
             x++)
         {
-            var sample = Click.GetOutputSample(clickWindowStartPositionInAudio + x);
+            var sample = AudioPatch.GetOutputSample(clickWindowStartPositionInAudio + x);
             var y = Height * (-sample + 1) / 2;
             output.Add(new PointF(x, y));
         }
@@ -147,6 +148,6 @@
 
     private void OnImageClick(MouseEventArgs e)
     {
-        OnEditorCalled.InvokeAsync(Click);
+        OnEditorCalled.InvokeAsync(AudioPatch);
     }
 }

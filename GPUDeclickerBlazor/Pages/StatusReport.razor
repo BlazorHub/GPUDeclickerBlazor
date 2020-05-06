@@ -1,6 +1,6 @@
 ﻿@inject Data.AppState  AppState
 
-@using GPUDeclickerUWP.Model.Data;
+@using AudioClickRepair.Data;
 
 <div class="card mb-2">
     <h4 class="card-title">Status</h4>
@@ -16,12 +16,12 @@
     public double Progress { get; set; }
 
     private int GetNumberOfClicks() =>
-        AppState.AudioData is null
+        AppState.Audio is null
         ? 0
-        : AppState.AudioData.GetTotalNumberOfClicks();
+        : AppState.Audio.GetTotalNumberOfPatches();
 
     private string GetTaskStatus() =>
-        AppState.AudioData is null
+        AppState.Audio is null
         ? "Please load audio file"
         : Status;
 }

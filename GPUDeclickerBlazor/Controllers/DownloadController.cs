@@ -1,5 +1,5 @@
 ﻿using GPUDeclickerBlazor.Data;
-using GPUDeclickerUWP.Model.InputOutput;
+using AudioInputOutput_NAudio;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 
@@ -10,11 +10,11 @@ public class DownloadController : ControllerBase
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
     public ActionResult Get(string name, [FromServices] AppState appState)
     {
-        if (appState is null || appState.AudioData is null)
+        if (appState is null || appState.Audio is null)
             return new EmptyResult();
 
         var audioIO = new AudioInputOutput();
-        audioIO.SetAudioData(appState.AudioData);
+        audioIO.SetAudioData(appState.Audio);
         var (success, stream) = audioIO.SaveAudioToStream();
 
         if (!success)

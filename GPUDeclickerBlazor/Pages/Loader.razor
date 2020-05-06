@@ -2,7 +2,7 @@
 
 @inject Data.AppState  AppState
 
-@using GPUDeclickerUWP.Model.InputOutput;
+@using AudioInputOutput_NAudio;
 @using System.ComponentModel.DataAnnotations;
 @using System.IO;
 
@@ -67,7 +67,7 @@
     {
         base.OnInitialized();
 
-        _status = AppState.AudioData is null ? "Please load audio" : "Audio is loaded";
+        _status = AppState.Audio is null ? "Please load audio" : "Audio is loaded";
     }
 
     private async Task HandleValidSubmit()
@@ -75,20 +75,20 @@
         _status = "Loading...";
         var uri = new Uri(_viewerModel.Uri);
         var result = await _audioIO.LoadAudioFromHttpAsync(uri);
-        if (result.success)
+        if (String.IsNullOrEmpty(result.errorMessage))
         {
-            AppState.SetAudioData(_audioIO.GetAudioData());
+            AppState.SetAudioData();
             _status = "Length (in samples) : " + GetLength();
             AppState.OutputFileNameSuggestion =
                 Path.GetFileNameWithoutExtension(uri.LocalPath);
         }
         else
-            _status = "Can not load this one: " + result.error;
+            _status = "Can not load this one: " + result.errorMessage;
     }
 
-    private string GetLength() => AppState.AudioData is null
+    private string GetLength() => AppState.Audio is null
         ? "unknown"
-        : AppState.AudioData.LengthSamples().ToString();
+        : AppState.Audio.LengthSamples.ToString();
 
     private void CheckTestUrl()
     {
@@ -101,15 +101,15 @@
         _status = "Loading...";
         var file = files.FirstOrDefault();
         var result = await _audioIO.LoadAudioFromStreamAsync(file.Data, file.Name);
-        if (result.success)
+        if (String.IsNullOrEmpty(result.errorMessage))
         {
-            AppState.SetAudioData(_audioIO.GetAudioData());
+            AppState.SetAudioData();
             _status = "Length (in samples) : " + GetLength();
             AppState.OutputFileNameSuggestion = 
                 Path.GetFileNameWithoutExtension(file.Name);
         }
         else
-            _status = "Can not load this one: " + result.error;
+            _status = "Can not load this one: " + result.errorMessage;
         StateHasChanged();
     }
 }
