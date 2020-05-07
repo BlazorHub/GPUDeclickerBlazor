@@ -41,12 +41,12 @@
             {
                 if (AppState.Audio.IsStereo)
                 {
-                <ClickCollectionWindow ClickArray="@AppState.GetAudioClicks(ChannelType.Left)" Title="Left channel" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
-                <ClickCollectionWindow ClickArray="@AppState.GetAudioClicks(ChannelType.Right)" Title="Right channel" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
+                <ClickCollectionWindow PatchArray="@AppState.GetAudioClicks(ChannelType.Left)" Title="Left channel" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
+                <ClickCollectionWindow PatchArray="@AppState.GetAudioClicks(ChannelType.Right)" Title="Right channel" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
                 }
                 else
                 {
-                <ClickCollectionWindow ClickArray="@AppState.GetAudioClicks(ChannelType.Left)" Title="Mono" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
+                <ClickCollectionWindow PatchArray="@AppState.GetAudioClicks(ChannelType.Left)" Title="Mono" ColNumber="@_colNumber" OnEditorCalled="EditClick" />
                 }
             }
         }
@@ -66,7 +66,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <ClickEditor Click="@_patchForEditing" />
+                    <ClickEditor AudioPatch="@_patchForEditing" />
                 </div>
             </div>
         </div>
