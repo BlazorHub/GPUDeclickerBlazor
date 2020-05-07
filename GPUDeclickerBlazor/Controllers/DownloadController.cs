@@ -1,5 +1,6 @@
-﻿using GPUDeclickerBlazor.Data;
+﻿using AudioClickRepair.Data;
 using AudioInputOutput_NAudio;
+using GPUDeclickerBlazor.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 
@@ -14,8 +15,12 @@ public class DownloadController : ControllerBase
             return new EmptyResult();
 
         var audioIO = new AudioInputOutput();
-        audioIO.SetAudioData(appState.Audio);
-        var (success, stream) = audioIO.SaveAudioToStream();
+        var data = new AudioData(
+            appState.Audio.Settings.SampleRate,
+            appState.Audio.GetOutputArray(ChannelType.Left),
+            appState.Audio.GetOutputArray(ChannelType.Right));
+
+        var (success, stream) = audioIO.SaveToMemoryStream(data);
 
         if (!success)
             return new EmptyResult();
@@ -30,6 +35,4 @@ public class DownloadController : ControllerBase
 
         return result;
     }
-
-
 }
