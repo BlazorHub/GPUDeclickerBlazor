@@ -8,7 +8,6 @@ using System.IO;
 public class DownloadController : ControllerBase
 {
     [HttpGet, Route("{name}")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
     public ActionResult Get(string name, [FromServices] AppState appState)
     {
         if (appState is null || appState.Audio is null)

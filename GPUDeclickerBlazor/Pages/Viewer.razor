@@ -37,7 +37,7 @@
         }
         else
         {
-            if (AppState.Audio.CurrentChannelIsPreprocessed())
+            if (AppState.Audio.ChannelIsPreprocessed(ChannelType.Left))
             {
                 if (AppState.Audio.IsStereo)
                 {
@@ -98,7 +98,8 @@
 
     private string ScanOrRescan()
     {
-        if (AppState.Audio is null || !AppState.Audio.CurrentChannelIsPreprocessed())
+        if (AppState.Audio is null 
+            || !AppState.Audio.ChannelIsPreprocessed(ChannelType.Left))
             return "Scan";
         else
             return "Rescan";

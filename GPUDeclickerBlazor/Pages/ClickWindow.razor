@@ -1,11 +1,13 @@
-﻿@using System.Drawing
+﻿@inject Data.AppState  AppState
+
+@using System.Drawing
 @using AudioClickRepair.Data
 
 @if (AudioPatch is null)
 {
     <h5>Empty</h5>
 }
- else
+else
 {
     <h5>@AudioPatch.StartPosition x @AudioPatch.Length</h5>
 }
@@ -14,8 +16,9 @@
 
 @code {
     [Parameter]
-    public Patch AudioPatch
-    { get; set; }
+    public Patch AudioPatch { get; set; }
+    [Parameter]
+    public ChannelType FromChannel { get; set; }
     [Parameter]
     public int Width { get; set; }
     [Parameter]
@@ -49,7 +52,7 @@
         format.LineAlignment = StringAlignment.Center;
         format.Alignment = StringAlignment.Center;
         graphics.DrawString(
-            "Empty", 
+            "Empty",
             new Font(FontFamily.GenericSansSerif, Height / 3, FontStyle.Regular),
             Brushes.Gray,
             new RectangleF(0, 0, Width, Height),
@@ -126,8 +129,11 @@
         // set Input polylyne
         for (var x = 0; x < Width; x++)
         {
-            var sample = AudioPatch.GetInputSample(clickWindowStartPositionInAudio + x);
-            var y = Height * (-sample + 1) / 2;
+            var sample = AppState.Audio.GetInputSample(
+                FromChannel,
+                clickWindowStartPositionInAudio + x);
+
+            var y = (float) (Height * (-sample + 1) / 2);
             input.Add(new PointF(x, y));
         }
 
@@ -137,8 +143,11 @@
             x <= shift + AudioPatch.Length + 1;
             x++)
         {
-            var sample = AudioPatch.GetOutputSample(clickWindowStartPositionInAudio + x);
-            var y = Height * (-sample + 1) / 2;
+            var sample = AppState.Audio.GetOutputSample(
+                FromChannel,
+                clickWindowStartPositionInAudio + x);
+
+            var y = (float) (Height * (-sample + 1) / 2);
             output.Add(new PointF(x, y));
         }
 

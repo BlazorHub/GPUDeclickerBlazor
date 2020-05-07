@@ -2,6 +2,7 @@
 
 @inject Data.AppState  AppState
 
+@using AudioClickRepair.Data;
 @using AudioInputOutput_NAudio;
 @using System.ComponentModel.DataAnnotations;
 @using System.IO;
@@ -75,15 +76,36 @@
         _status = "Loading...";
         var uri = new Uri(_viewerModel.Uri);
         var result = await _audioIO.LoadAudioFromHttpAsync(uri);
+
         if (String.IsNullOrEmpty(result.errorMessage))
         {
-            AppState.SetAudioData();
+            AppState.SetAudioData(AudioFromData(result.data));
             _status = "Length (in samples) : " + GetLength();
             AppState.OutputFileNameSuggestion =
                 Path.GetFileNameWithoutExtension(uri.LocalPath);
         }
         else
             _status = "Can not load this one: " + result.errorMessage;
+    }
+
+    private IAudio AudioFromData(AudioData data)
+    {
+        var (sampleRate, left, right) = data.ToDouble();
+
+        if (right is null) // mono
+        {
+            return new Mono(
+                left,
+                new AudioProcessingSettings() { SampleRate = sampleRate });
+        }
+        else // stereo
+        {
+            return new Stereo(
+                left,
+                right,
+                new AudioProcessingSettings() { SampleRate = sampleRate });
+        }
+
     }
 
     private string GetLength() => AppState.Audio is null
@@ -103,9 +125,9 @@
         var result = await _audioIO.LoadAudioFromStreamAsync(file.Data, file.Name);
         if (String.IsNullOrEmpty(result.errorMessage))
         {
-            AppState.SetAudioData();
+            AppState.SetAudioData(AudioFromData(result.data));
             _status = "Length (in samples) : " + GetLength();
-            AppState.OutputFileNameSuggestion = 
+            AppState.OutputFileNameSuggestion =
                 Path.GetFileNameWithoutExtension(file.Name);
         }
         else

@@ -23,7 +23,8 @@
 </div>
 
 @code {
-
+    [Parameter]
+    public ChannelType FromChannel { get; set; }
     [Parameter]
     public int Width { get; set; }
     [Parameter]
@@ -185,20 +186,20 @@
     private void FindMinMax(
         int begining,
         int length,
-        out float minValue,
-        out float maxValue)
+        out double minValue,
+        out double maxValue)
     {
-        minValue = AppState.Audio.GetInputSample(begining);
-        maxValue = AppState.Audio.GetInputSample(begining);
+        minValue = AppState.Audio.GetInputSample(FromChannel, begining);
+        maxValue = AppState.Audio.GetInputSample(FromChannel, begining);
 
         for (var index = 0;
             index < length && begining + index < AppState.Audio.LengthSamples;
             index++)
         {
-            if (AppState.Audio.GetInputSample(begining + index) < minValue)
-                minValue = AppState.Audio.GetInputSample(begining + index);
-            if (AppState.Audio.GetInputSample(begining + index) > maxValue)
-                maxValue = AppState.Audio.GetInputSample(begining + index);
+            if (AppState.Audio.GetInputSample(FromChannel, begining + index) < minValue)
+                minValue = AppState.Audio.GetInputSample(FromChannel, begining + index);
+            if (AppState.Audio.GetInputSample(FromChannel, begining + index) > maxValue)
+                maxValue = AppState.Audio.GetInputSample(FromChannel, begining + index);
         }
     }
 }
