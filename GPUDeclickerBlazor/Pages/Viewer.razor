@@ -128,7 +128,7 @@
         _inProcess = true;
 
         // scan and repair
-        await AppState.Audio.ScanAsync(_status);
+        await AppState.Audio.ScanAsync(_status, _progress);
 
         _inProcess = false;
 
