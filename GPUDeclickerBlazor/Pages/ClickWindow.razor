@@ -9,7 +9,7 @@
 }
 else
 {
-    <h5>@AudioPatch.StartPosition x @AudioPatch.Length</h5>
+    <h5>@AudioPatch.StartPosition x @AudioPatch.Length (@String.Format("{0:N1}", @AudioPatch.ErrorLevelAtDetection))</h5>
 }
 
 <img class="mh-100 mw-100" src="data:image/gif;base64,@_imageBase64" @onclick="OnImageClick" />
