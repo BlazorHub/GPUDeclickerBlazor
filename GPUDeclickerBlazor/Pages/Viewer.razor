@@ -92,8 +92,17 @@
 
     protected override void OnInitialized()
     {
-        _progress = new Progress<double>((d) => { _taskProgress = d; StateHasChanged(); });
-        _status = new Progress<string>((s) => { _taskStatus = s; StateHasChanged(); });
+        _progress = new Progress<double>((d) =>
+        {
+            _taskProgress = d;
+            StateHasChanged();
+        });
+
+        _status = new Progress<string>((s) => 
+        { 
+            _taskStatus = s;
+            StateHasChanged(); 
+        });
     }
 
     private string ScanOrRescan()
@@ -119,11 +128,7 @@
         _inProcess = true;
 
         // scan and repair
-        //await AudioProcessing.ProcessAudioAsync(
-        //    AppState.Audio,
-        //    _progress,
-        //    _status);
-        AppState.Audio.Scan();
+        await AppState.Audio.ScanAsync(_status);
 
         _inProcess = false;
 
