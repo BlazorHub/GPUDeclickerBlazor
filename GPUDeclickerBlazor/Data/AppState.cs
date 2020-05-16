@@ -5,8 +5,8 @@ namespace GPUDeclickerBlazor.Data
 {
     public class AppState
     {
-        const double _defaultThreshold = 10f;
-        const int _defaultMaxLength = 250;
+        const double _defaultThreshold = 7f;
+        const int _defaultMaxLength = 150;
 
         public string OutputFileNameSuggestion { get; set; } = String.Empty;
 
