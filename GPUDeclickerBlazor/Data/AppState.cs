@@ -50,6 +50,9 @@ namespace GPUDeclickerBlazor.Data
             if (audioData is null)
                 return;
 
+            // Dispose the old data
+            Audio?.Dispose();
+
             Audio = audioData;
             Audio.Settings.ThresholdForDetection = _defaultThreshold;
             Audio.Settings.MaxLengthOfCorrection = _defaultMaxLength;
