@@ -1,4 +1,4 @@
-﻿using AudioClickRepair.Data;
+﻿using CarefulAudioRepair.Data;
 using System;
 
 namespace GPUDeclickerBlazor.Data

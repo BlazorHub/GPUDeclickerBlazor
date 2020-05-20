@@ -10,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioInputOutput_NAudio", "AudioInputOutput_NAudio\AudioInputOutput_NAudio.csproj", "{E3885752-DD74-4E0D-A50D-A1E8CA76F950}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioInputOutput_NAudio", "AudioInputOutput_NAudio\AudioInputOutput_NAudio.csproj", "{E3885752-DD74-4E0D-A50D-A1E8CA76F950}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioClickRepair", "..\AudioClickRepair\AudioClickRepair\AudioClickRepair.csproj", "{E6D30C85-9D96-4D7D-9615-7240D8EDC375}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarefulAudioRepair", "..\CarefulAudioRepair\CarefulAudioRepair\CarefulAudioRepair.csproj", "{E1B599FE-25AF-4D03-AFB2-B5CDC370FA21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,10 +28,10 @@ Global
 		{E3885752-DD74-4E0D-A50D-A1E8CA76F950}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3885752-DD74-4E0D-A50D-A1E8CA76F950}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3885752-DD74-4E0D-A50D-A1E8CA76F950}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E6D30C85-9D96-4D7D-9615-7240D8EDC375}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E6D30C85-9D96-4D7D-9615-7240D8EDC375}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E6D30C85-9D96-4D7D-9615-7240D8EDC375}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E6D30C85-9D96-4D7D-9615-7240D8EDC375}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1B599FE-25AF-4D03-AFB2-B5CDC370FA21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1B599FE-25AF-4D03-AFB2-B5CDC370FA21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1B599FE-25AF-4D03-AFB2-B5CDC370FA21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1B599FE-25AF-4D03-AFB2-B5CDC370FA21}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

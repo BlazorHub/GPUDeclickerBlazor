@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\AudioClickRepair\AudioClickRepair\AudioClickRepair.csproj" />
+    <ProjectReference Include="..\..\CarefulAudioRepair\CarefulAudioRepair\CarefulAudioRepair.csproj" />
     <ProjectReference Include="..\AudioInputOutput_NAudio\AudioInputOutput_NAudio.csproj" />
   </ItemGroup>
 
