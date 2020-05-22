@@ -37,12 +37,7 @@
 <div class="card mb-2">
     <h4 class="card-title">Load your local audio file</h4>
     <div class="card-text">
-        <EditForm Model="@_viewerModel" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="CheckTestUrl">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
-            <InputFile OnChange="HandleFileSelected" />
-        </EditForm>
+        <InputFile OnChange="HandleFileSelected" />
     </div>
 </div>
 
