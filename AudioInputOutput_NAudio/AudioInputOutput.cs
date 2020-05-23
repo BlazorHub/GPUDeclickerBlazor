@@ -96,13 +96,7 @@ namespace AudioInputOutput_NAudio
         {
             var memoryStream = new MemoryStream();
 
-            var buffer = new byte[32768];
-            int byteCount;
-            while ((byteCount = await stream.ReadAsync(buffer, 0, buffer.Length)
-                .ConfigureAwait(false)) > 0)
-            {
-                memoryStream.Write(buffer, 0, byteCount);
-            }
+            await stream.CopyToAsync(memoryStream);
 
             // Reset memory stream position
             memoryStream.Position = 0;
