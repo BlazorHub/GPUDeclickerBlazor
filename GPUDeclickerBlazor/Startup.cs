@@ -1,3 +1,4 @@
+using Blazor.FileReader;
 using GPUDeclickerBlazor.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,6 +24,7 @@ namespace GPUDeclickerBlazor
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<AppState>();
+            services.AddFileReaderService();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,9 +1,11 @@
 ﻿@page "/upload"
 
 @inject Data.AppState  AppState
+@inject IFileReaderService fileReaderService
 
 @using CarefulAudioRepair.Data;
 @using AudioInputOutput_NAudio;
+@using Blazor.FileReader;
 @using System.ComponentModel.DataAnnotations;
 @using System.IO;
 
@@ -37,13 +39,28 @@
 <div class="card mb-2">
     <h4 class="card-title">Load your local audio file</h4>
     <div class="card-text">
-        <InputFile OnChange="HandleFileSelected" />
+
+        <EditForm Model="_viewerModel" OnSubmit="UploadFile">
+            <div>
+                <label class="btn btn-primary" for="file">1. Select audio file</label>
+                <input style="opacity:0" type="file" id="file" name="file" @ref=localFile @onchange="OnInputChanged" />
+            </div>
+            <div>
+                <p>@localFileName</p>
+            </div>
+            <div>
+                <button class="btn btn-primary">2. Upload</button>
+            </div>
+        </EditForm>
     </div>
 </div>
 
 <h4>@_status</h4>
 
 @code {
+
+    private ElementReference localFile;
+    private string localFileName = "No files currently selected for upload";
 
     private bool _testMode = false;
 
@@ -63,7 +80,7 @@
     {
         base.OnInitialized();
 
-        _status = AppState.Audio is null ? "Please load audio" : "Audio is loaded";
+        _status = AppState.Audio is null ? "Please upload audio" : "Audio is uploaded";
     }
 
     private async Task HandleValidSubmit()
@@ -113,20 +130,42 @@
             _testMode = true;
     }
 
-    private async void HandleFileSelected(IFileListEntry[] files)
+    private async void UploadFile()
     {
         _status = "Loading...";
-        var file = files.FirstOrDefault();
-        var result = await _audioIO.LoadAudioFromStreamAsync(file.Data, file.Name);
-        if (String.IsNullOrEmpty(result.errorMessage))
+
+        var file = (await fileReaderService.CreateReference(localFile)
+            .EnumerateFilesAsync())
+                .FirstOrDefault();
+
+        var fileName = (await file.ReadFileInfoAsync()).Name;
+
+        using (MemoryStream memoryStream = await file.CreateMemoryStreamAsync(4096))
         {
-            AppState.SetAudioData(AudioFromData(result.data));
-            _status = "Length (in samples) : " + GetLength();
-            AppState.OutputFileNameSuggestion =
-                Path.GetFileNameWithoutExtension(file.Name);
+            var result = await _audioIO.LoadAudioFromStreamAsync(memoryStream, fileName);
+
+            if (String.IsNullOrEmpty(result.errorMessage))
+            {
+                AppState.SetAudioData(AudioFromData(result.data));
+                _status = "Length (in samples) : " + GetLength();
+                AppState.OutputFileNameSuggestion =
+                    Path.GetFileNameWithoutExtension(fileName);
+            }
+            else
+                _status = "Can not load this one: " + result.errorMessage;
+
+            StateHasChanged();
         }
-        else
-            _status = "Can not load this one: " + result.errorMessage;
+    }
+
+    private async void OnInputChanged()
+    {
+        var file = (await fileReaderService.CreateReference(localFile)
+            .EnumerateFilesAsync())
+                .FirstOrDefault();
+
+        localFileName = (await file.ReadFileInfoAsync()).Name;
+
         StateHasChanged();
     }
 }
